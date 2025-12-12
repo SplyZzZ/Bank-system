@@ -1,0 +1,13 @@
+# build
+build/
+cmake-build-*/
+*.o
+*.out
+*.exe
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+

@@ -1,0 +1,26 @@
+#pragma once
+#include "BankError.h"
+
+class InvalidAmount : public BankError
+{
+public:
+   InvalidAmount() : BankError("Invalid amount") {}
+};
+
+class InsufficientFunds : public BankError
+{
+public:
+    InsufficientFunds() : BankError("Insufficient funds") {}
+};
+
+class DuplicateAccount : public BankError
+{
+public:
+    DuplicateAccount() : BankError("Duplicate account") {}
+};
+
+class AccountNotFound : public BankError
+{
+public:
+    AccountNotFound() : BankError("account not found") {}
+};
