@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "AccountType.h"
+
 class Account
 {
 public: 
@@ -14,4 +15,5 @@ private:
     std::string iban_;
     AccountType type_;
     int64_t balance_;
+    
 };
