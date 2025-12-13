@@ -27,6 +27,11 @@ void Account::withdraw(int64_t amount)
     balance_ -= amount;
 }
 
+AccountType Account::getType() const noexcept
+{
+    return type_;
+}
+
 std::string Account::getIban() const noexcept
 {
     return iban_

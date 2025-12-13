@@ -11,6 +11,7 @@ public:
     void deposit(int64_t amount);
     void withdraw(int64_t amount);
     std::string getIbam() const noexcept;
+    AccountType getType() const noexcept;
 private:
     std::string iban_;
     AccountType type_;

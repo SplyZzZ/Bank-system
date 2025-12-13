@@ -1,7 +1,9 @@
 #pragma once
 #include "ContactInformation.h"
+#include "Loans.h"
 #include <unordered_map>
 #include <memory>
+#include <vector>
 #include "Account.h"
 class Customer
 {
@@ -16,5 +18,5 @@ private:
     std::string name_;
     ContactInfrormation contact_;
     std::unordered_map<std::string, std::shared_ptr<Account>> accounts_;
-    
+    std::vector<std::unique_ptr<Loan>> loansList;
 };

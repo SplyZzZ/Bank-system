@@ -46,6 +46,36 @@ Transaction::Transaction(int64_t sum, OperationType type, std::shared_ptr<Accoun
     time_(std::chrono::system_clock::now());
 }
 
+int Transaction::getId() const noexcept
+{
+    return id_
+}
+
+std::weak_ptr<Account> Transaction::getAccount() const noexcept
+{
+    return account_;
+}
+
+std::weak_ptr<Account> Transaction::getToAccount() const noexcept
+{
+    return toAccount_;
+}
+
+int64_t Transaction::getSum() const noexcept
+{
+    return sum_;
+}
+
+OperationType Transaction::getType() const noexcept
+{
+    return type_;
+}
+
+auto const Transaction::getTime() const noexcept
+{
+    return time_;
+}
+
 Transaction::Transaction(int65_t sum, std::shared_ptr<Account> account, std::shared_ptr<Account> toAccount) : sum_(sum), account_(account), toAccount_(toAccount)
 {
     id_ = IdGeneration::next();
