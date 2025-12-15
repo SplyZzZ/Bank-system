@@ -11,6 +11,6 @@ class ReportAccountStatus : public Report
     std::vector<std::shared_ptr<Account>> accountList_;
 
  protected:
-    virtual void build() override;
+    virtual Report build() override;
  
 }

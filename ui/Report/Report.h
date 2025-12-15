@@ -9,7 +9,7 @@ public:
 
 protected:
 
-    virtual void build() const = 0;
+    virtual Report build() const = 0;
 
     StructReport doc_;
 };

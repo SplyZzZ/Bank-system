@@ -1,7 +1,7 @@
 #include "ReportAccountStatus.h"
 #include "AccountTypeToString.h"
 ReportAccountStatus::ReportAccountStatus(const std::vector<std::shared_ptr<Account>>& accountList) : accountList_(accountList){};
-void ReportAccountStatus::build()
+Report ReportAccountStatus::build()
 {
     doc_.title = "Account report";
     doc_.header = {"Iban","Balance","Type"};
@@ -20,4 +20,5 @@ void ReportAccountStatus::build()
             }
         );
     }
+    return doc_;
 }

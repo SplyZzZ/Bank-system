@@ -6,7 +6,7 @@ public:
     ReportTransaction(const std::vector<shared_ptr<Transaction>>& transactionsList);
 
 protected:
-    virtual void build() override;
+    virtual Report build() override;
 
 private:
     std::vector<std::shared_ptr<Transaction>> transactionsList_;
