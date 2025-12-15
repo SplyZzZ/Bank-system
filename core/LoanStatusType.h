@@ -1,3 +1,4 @@
+#pragma once
 enum class LoanStatusType
 {
      issued = 0,

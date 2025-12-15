@@ -1,3 +1,4 @@
+#pragma once
 #include "../../core/OperationType.h"
 #include <string>
 inline std::string operationTypeToString(OperationType type)

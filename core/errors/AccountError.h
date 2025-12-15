@@ -22,5 +22,6 @@ public:
 class AccountNotFound : public BankError
 {
 public:
-    AccountNotFound() : BankError("account not found") {}
+    AccountNotFound() : BankError("Account not found") {}
 };
+

@@ -8,11 +8,11 @@
 class Customer
 {
 public:
-    Customer(std::string name, ContactInfrormation& contact);
+    Customer(std::string name, ContactInfrormation contact);
     void addAccount(std::shared_ptr<Account> newAccount);
     void removeAccount(std::string& iban);
     const ContactInfrormation& getContact() const noexcept;
-    
+     int getID() const noexcept;
 private:
     int id_;
     std::string name_;

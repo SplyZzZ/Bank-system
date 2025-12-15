@@ -2,5 +2,5 @@
 class TransactionTypeError : public BankError
 {
     public:
-    TransactionTypeError() : BankError("Invalid transaction type");
-}
+    TransactionTypeError() : BankError("Invalid transaction type") {}
+};

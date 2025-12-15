@@ -3,7 +3,7 @@
 ReportTransaction::ReportTransaction(const std::vector<shared_ptr<Transaction>>& transactionsList) : transactionsList_(transactionsList)
 {}
 
-void ReportTransaction::build()
+Report ReportTransaction::build()
 {
     doc_.title = "Transaction report";
     doc_.header = {"ID", "Type", "Sum", "Account", "To account", "Time"};
@@ -36,4 +36,5 @@ void ReportTransaction::build()
             }
         );
     }
+    return doc_;
 }

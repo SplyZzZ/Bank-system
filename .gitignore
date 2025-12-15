@@ -11,3 +11,8 @@ cmake-build-*/
 # OS
 .DS_Store
 
+.cache/
+
+compile_commands.events.json
+.gitignore
+compile_commands.json

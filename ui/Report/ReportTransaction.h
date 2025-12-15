@@ -1,3 +1,4 @@
+#pragma once
 #include "Report.h"
 #include "core/Transaction.h"
 class ReportTransaction : public Report

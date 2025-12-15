@@ -1,3 +1,4 @@
+#pragma once
 #include "StructReport.h"
 class Report
 {
