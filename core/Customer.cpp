@@ -1,17 +1,19 @@
 #include "Customer.h"
 #include "errors/AccountError.h"
 #include "../services/IdGeneration.h"
+#include <algorithm>
 Customer::Customer(std::string name, ContactInfrormation contact) : name_(std::move(name)), contact_(std::move(contact))
 {
     id_ = IdGeneration::next();
 }
-void Customer::addAccount(std::shared_ptr<Account> newAccount)
+void Customer::addAccount(std::string newAccount)
 {
-   auto [it, inserted] = accounts_.try_emplace(newAccount->getIbam(), newAccount );
-   if(!inserted)
+  auto it = std::find(accounts_.begin(), accounts_.end(), newAccount);
+   if(it != accounts_.end())
    {
     throw DuplicateAccount{};
    }
+   accounts_.emplace_back(newAccount);
 }
  int Customer::getID() const noexcept
 {
@@ -22,10 +24,12 @@ const ContactInfrormation& Customer::getContact() const noexcept
     return contact_;
 }
 
-void Customer::removeAccount(std::string& iban)
+void Customer::removeAccount(std::string iban)
 {
-    if(accounts_.erase(iban) == 0)
-    {
-        throw AccountNotFound{};
-    }
+   auto it = std::find(accounts_.begin(), accounts_.end(), iban);
+   if(it == accounts_.end())
+   {
+    throw DuplicateAccount{};
+   }
+   accounts_.erase(it);
 }

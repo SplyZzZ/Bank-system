@@ -15,7 +15,7 @@ public:
     std::weak_ptr<Account> getToAccount() const noexcept;
     int64_t getSum() const noexcept;
     OperationType getType() const noexcept;
-    auto const getTime() const noexcept;
+    auto  getTime() const noexcept;
 private:
     int id_;
     std::weak_ptr<Account> account_;

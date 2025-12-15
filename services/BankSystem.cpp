@@ -1,8 +1,13 @@
 #include "BankSystem.h"
+#include <memory>
 #include <string>
+#include "core/Account.h"
 #include "core/ContactInformation.h"
 #include "core/errors/ContractInformationError.h"
 #include "core/errors/IdGenerationError.h"
+#include "core/errors/AccountError.h"
+#include "core/AccountType.h"
+#include "IbamGeneretion.h"
  void BankSystem::addCustomer(std::string name, ContactInfrormation contact)
  {
     validateContactUniqueness(contact);
@@ -28,4 +33,17 @@
     {
         throw DuplicatePhone{};
     }
- }
+}
+std::string BankSystem::createAccount(AccountType type)
+{
+    std::string newIbam;
+    do
+    {
+      newIbam = IbamGeneretion();
+    }while(accountList_.find(newIbam) != accountList_.end());
+
+    auto newAccount = std::make_shared<Account>(newIbam, type);
+    accountList_.emplace(newIbam, newAccount);
+    return newIbam;
+
+}
