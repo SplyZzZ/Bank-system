@@ -1,7 +1,7 @@
-#include "../core/Transaction.h"
-#include "../core/errors/AccountError.h"
-#include "../core/errors/TransactionError.h"
-#include "Transaction.h"
+#include "core/Transaction.h"
+#include "core/errors/AccountError.h"
+#include "core/errors/TransactionError.h"
+#include "core/Transaction.h"
 #include "IdGeneration.h"
 void Transaction::execute()
 {
@@ -22,16 +22,15 @@ void Transaction::execute()
     }
     case OperationType::transfer:
     {
-        auto from = account_.lock();
         auto to = toAccount_.lock();
 
-        if(!to || !from){throw AccountNotFound{};}
+        if(!to){throw AccountNotFound{};}
 
         from->withdraw(sum_);
         to->deposit(sum_);
         break;
     }
-    
+
     default:
     {
         throw TransactionTypeError{};
@@ -39,16 +38,15 @@ void Transaction::execute()
     }
     }
 }
-Transaction::Transaction(int64_t sum, OperationType type, std::shared_ptr<Account> account) : sum_(sum), type_(type), account_(account)
+Transaction::Transaction(int64_t sum, OperationType type, std::shared_ptr<Account> account) : account_(account), sum_(sum), type_(type)
 {
-    id_ = IdGeneration::next()
-    toAccount_ = nullptr;
-    time_(std::chrono::system_clock::now());
+    id_ = IdGeneration::next();
+    time_ = std::chrono::system_clock::now();
 }
 
 int Transaction::getId() const noexcept
 {
-    return id_
+    return id_;
 }
 
 std::weak_ptr<Account> Transaction::getAccount() const noexcept
@@ -71,14 +69,14 @@ OperationType Transaction::getType() const noexcept
     return type_;
 }
 
-auto const Transaction::getTime() const noexcept
+auto  Transaction::getTime() const noexcept
 {
     return time_;
 }
 
-Transaction::Transaction(int65_t sum, std::shared_ptr<Account> account, std::shared_ptr<Account> toAccount) : sum_(sum), account_(account), toAccount_(toAccount)
+Transaction::Transaction(int64_t sum, std::shared_ptr<Account> account, std::shared_ptr<Account> toAccount) : account_(account), toAccount_(toAccount), sum_(sum)
 {
     id_ = IdGeneration::next();
     type_ = OperationType::transfer;
-    time_(std::chrono::system_clock::now());
+    time_ = std::chrono::system_clock::now();
 }

@@ -3,13 +3,14 @@
 #include <string>
 #include "core/Account.h"
 #include "core/ContactInformation.h"
+#include "core/Transaction.h"
+#include "core/errors/AccountError.h"
 #include "core/errors/ContractInformationError.h"
 #include "core/errors/IdGenerationError.h"
-#include "core/errors/AccountError.h"
 #include "core/AccountType.h"
 #include "IbamGeneretion.h"
- void BankSystem::addCustomer(std::string name, ContactInfrormation contact)
- {
+void BankSystem::addCustomer(std::string name, ContactInfrormation contact)
+{
     validateContactUniqueness(contact);
 
     auto newCustomer = std::make_shared<Customer>(name, contact);
@@ -21,9 +22,9 @@
 
     if(contact.email) {idByEmail_.emplace(*contact.email ,newCustomer->getID());}
     if(contact.phone) {idByPhone_.emplace(*contact.phone, newCustomer->getID());}
- }
- void BankSystem::validateContactUniqueness(const ContactInfrormation& contact) const
- {
+}
+void BankSystem::validateContactUniqueness(const ContactInfrormation& contact) const
+{
     if (contact.email && idByEmail_.find(*contact.email) != idByEmail_.end())
     {
         throw DuplicateEmail{};
@@ -45,5 +46,18 @@ std::string BankSystem::createAccount(AccountType type)
     auto newAccount = std::make_shared<Account>(newIbam, type);
     accountList_.emplace(newIbam, newAccount);
     return newIbam;
+
+}
+void BankSystem::createTransaction(OperationType type, int64_t sum, const std::string& fromAccount)
+{
+   auto it = accountList_.find(fromAccount)
+   if(itthrow AccountNotFound{};
+   auto acc = accountList_.at(fromAccount);
+   auto newTransaction = std::make_shared<Transaction>(sum,type, acc);
+
+   auto [it, inserted] = transactionList_.emplace(newTransaction->getId(), newTransaction);
+   if(!inserted) throw DuplicateTransactionId{};
+   newTransaction->execute();
+
 
 }
