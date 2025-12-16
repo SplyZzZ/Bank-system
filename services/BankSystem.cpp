@@ -50,14 +50,27 @@ std::string BankSystem::createAccount(AccountType type)
 }
 void BankSystem::createTransaction(OperationType type, int64_t sum, const std::string& fromAccount)
 {
-   auto it = accountList_.find(fromAccount)
-   if(itthrow AccountNotFound{};
-   auto acc = accountList_.at(fromAccount);
-   auto newTransaction = std::make_shared<Transaction>(sum,type, acc);
+   auto it = accountList_.find(fromAccount);
+   if(it == accountList_.end()) throw AccountNotFound{};
 
-   auto [it, inserted] = transactionList_.emplace(newTransaction->getId(), newTransaction);
-   if(!inserted) throw DuplicateTransactionId{};
+   auto acc = it->second;
+   auto newTransaction = std::make_shared<Transaction>(sum, type, acc);
+
    newTransaction->execute();
+
+   auto [iterator, inserted] = transactionList_.emplace(newTransaction->getId(), newTransaction);
+   if(!inserted) throw DuplicateTransactionId{};
+
+}
+void BankSystem::createTransaction(int64_t sum, const std::string& fromAccount, const std::string& toAccount)
+{
 
 
 }
+ std::shared_ptr<Account> BankSystem::findAccountUsIban(const std::string& iban) const
+ {
+    auto it = accountList_.find(iban);
+    if(it == accountList_.end()) throw AccountNotFound{};
+
+   return it->second;
+ }
