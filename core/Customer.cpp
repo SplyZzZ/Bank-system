@@ -33,3 +33,7 @@ void Customer::removeAccount(std::string iban)
    }
    accounts_.erase(it);
 }
+ void Customer::addLoan(int loanID) noexcept
+ {
+    loansIdList_.emplace_back(loanID);
+ }
