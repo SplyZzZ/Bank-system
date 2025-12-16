@@ -24,5 +24,10 @@ class AccountNotFound : public BankError
 public:
     AccountNotFound() : BankError("Account not found") {}
 };
+class PositiveBalanceDelete : public BankError
+{
+public:
+    PositiveBalanceDelete() : BankError("Positive balance") {}
+};
 
 

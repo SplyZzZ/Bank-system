@@ -36,4 +36,13 @@ void Customer::removeAccount(std::string iban)
  void Customer::addLoan(int loanID) noexcept
  {
     loansIdList_.emplace_back(loanID);
+    ++unsecuredLoan_;
+ }
+ const std::vector<std::string>& Customer::getAccountsList() const noexcept
+ {
+    return accounts_;
+ }
+ void Customer::unsecuredLoan() noexcept
+ {
+    --unsecuredLoan_;
  }

@@ -1,17 +1,21 @@
 #pragma once
 #include "LoanStatusType.h"
 
-
-class Loan
+#include <memory>
+#include "ISubjectLoan.h"
+class Loan : public ISubjectLoan
 {
 public:
 
  Loan(int64_t sum, double rate, int term, int customerID);
-
- int64_t calculateInterest() const;
-
- void changeStatus(LoanStatusType& newType) noexcept;
+ double calculateInterest() const;
+ void changeStatus(LoanStatusType newType) noexcept;
  int getID() const noexcept;
+
+ virtual void attach(std::shared_ptr<IObserverLoan>obs) override;
+ virtual void dettach() override;
+ virtual void notify() override;
+
 private:
     int id_;
     int customerID_;
@@ -19,4 +23,5 @@ private:
     double interestRate_;
     int term_;
     LoanStatusType type_;
+    std::weak_ptr<IObserverLoan> obs_;
 };

@@ -11,6 +11,8 @@
 #include "core/AccountType.h"
 #include "IbamGeneretion.h"
 #include "core/errors/CustomerError.h"
+#include "core/ObserverCustomer.h"
+
 void BankSystem::addCustomer(std::string name, ContactInfrormation contact)
 {
     validateContactUniqueness(contact);
@@ -88,9 +90,34 @@ void BankSystem::createLoan(int64_t sum, double rate, int term, int customerID)
     auto it = customerList_.find(customerID);
     if(it == customerList_.end()) throw CustomerNotFound {};
 
-    auto newLoan = std::make_unique<Loan>(sum, rate, term, it->second->getID());
+    auto newLoan = std::make_unique<Loan>(sum, rate, term, customerID);
     it->second->addLoan(newLoan->getID());
+
+    auto obs = std::make_shared<ObserverCustomer>(it->second);
+    loanObserversKeepAlive_.push_back(obs);
+    newLoan->attach(obs);
+
     loansList_.emplace(newLoan->getID(), std::move(newLoan) );
 
 
 }
+ void BankSystem::deleteCustomer(int customerID)
+ {
+   auto customer =  customerList_.at(customerID);
+
+
+
+
+
+   const std::vector<std::string> accountList = customer->getAccountsList();
+   if(accountList.size() != 0)
+   {
+    for (const auto& iban : accountList)
+    {
+     if(accountList_.at(iban)->getBalance() != 0)
+     {
+        throw PositiveBalanceDelete{};
+     }
+    }
+   }
+ }
