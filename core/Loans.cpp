@@ -1,7 +1,7 @@
 #include "Loans.h"
-#include "../services/IdGeneration.h"
+#include "services/IdGeneration.h"
 #include "core/LoanStatusType.h"
-Loan::Loan(int64_t sum, double rate, int term, int customerID) : sum_(sum), interestRate_(rate), term_(term), customerID_(customerID)
+Loan::Loan(int64_t sum, double rate, int term, int customerID) : customerID_(customerID), sum_(sum), interestRate_(rate), term_(term)
 {
     id_ = IdGeneration::next();
     type_ = LoanStatusType::issued;
@@ -15,7 +15,11 @@ double Loan::calculateInterest() const
 void Loan::changeStatus(LoanStatusType newType) noexcept
 {
     type_ = newType;
-    notify();
+
+    if(type_ == LoanStatusType::extinguished)
+    {
+        notify();
+    }
 
 }
 int Loan::getID() const noexcept

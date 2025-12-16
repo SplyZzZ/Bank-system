@@ -1,6 +1,5 @@
 #pragma once
 #include "LoanStatusType.h"
-
 #include <memory>
 #include "ISubjectLoan.h"
 class Loan : public ISubjectLoan

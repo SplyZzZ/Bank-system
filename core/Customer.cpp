@@ -46,3 +46,7 @@ void Customer::removeAccount(std::string iban)
  {
     --unsecuredLoan_;
  }
+ unsigned int Customer::getUnsecuredLoan() const noexcept
+ {
+    return unsecuredLoan_;
+ }

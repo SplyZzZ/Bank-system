@@ -103,21 +103,8 @@ void BankSystem::createLoan(int64_t sum, double rate, int term, int customerID)
 }
  void BankSystem::deleteCustomer(int customerID)
  {
-   auto customer =  customerList_.at(customerID);
+   auto customer = customerList_.at(customerID);
 
+   if(customer->getUnsecuredLoan() != 0){throw CustomerLoansNoExtinguished{};}
 
-
-
-
-   const std::vector<std::string> accountList = customer->getAccountsList();
-   if(accountList.size() != 0)
-   {
-    for (const auto& iban : accountList)
-    {
-     if(accountList_.at(iban)->getBalance() != 0)
-     {
-        throw PositiveBalanceDelete{};
-     }
-    }
-   }
  }
