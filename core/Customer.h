@@ -2,6 +2,9 @@
 #include "ContactInformation.h"
 #include <vector>
 #include "CustomerType.h"
+#include "services/CustomerPrifele.h"
+#include "services/CreditSnapshot.h"
+#include "services/CreditSnepshotServices.h"
 class Customer
 {
 public:
@@ -23,5 +26,8 @@ private:
     std::vector<std::string> accounts_;
     std::vector<int> loansIdList_;
     unsigned int unsecuredLoan_;
-    int64_t totalSumAllAccount_;
+    CustomerProfile profile_;
+    CreditSnapshot snapshot_;
+    friend class CreditSnepshotServices;
+
 };

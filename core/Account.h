@@ -4,7 +4,7 @@
 
 class Account
 {
-public: 
+public:
     Account(std::string& iban, AccountType type);
     int64_t getBalance() const noexcept;
     void setBalance(int64_t newBalance);
@@ -16,5 +16,4 @@ private:
     std::string iban_;
     AccountType type_;
     int64_t balance_;
-    
 };

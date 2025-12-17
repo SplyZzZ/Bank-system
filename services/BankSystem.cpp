@@ -94,14 +94,15 @@ void BankSystem::createLoan(int64_t sum, double rate, int term, int customerID)
     if(it == activityCustomerList_.end()) throw CustomerNotFound {};
 
     auto newLoan = std::make_unique<Loan>(sum, rate, term, customerID);
-    
+    queryLoans_.emplace(newLoan->getID(), std::move(newLoan));
+
     // it->second->addLoan(newLoan->getID());
 
     // auto obs = std::make_shared<ObserverCustomer>(it->second);
     // loanObserversKeepAlive_.push_back(obs);
     // newLoan->attach(obs);
 
-    loansList_.emplace(newLoan->getID(), std::move(newLoan) );
+    // loansList_.emplace(newLoan->getID(), std::move(newLoan) );
 
 
 }
@@ -130,3 +131,4 @@ void BankSystem::createLoan(int64_t sum, double rate, int term, int customerID)
    activityCustomerList_.erase(customer);
 
  }
+

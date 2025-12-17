@@ -2,6 +2,7 @@
 #include "errors/AccountError.h"
 #include "../services/IdGeneration.h"
 #include <algorithm>
+
 Customer::Customer(std::string name, ContactInfrormation contact) : name_(std::move(name)), contact_(std::move(contact))
 {
     id_ = IdGeneration::next();
