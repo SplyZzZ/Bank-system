@@ -5,6 +5,7 @@
 Customer::Customer(std::string name, ContactInfrormation contact) : name_(std::move(name)), contact_(std::move(contact))
 {
     id_ = IdGeneration::next();
+    type_ = CustomerType::Activity;
 }
 void Customer::addAccount(std::string newAccount)
 {
@@ -50,3 +51,7 @@ void Customer::removeAccount(std::string iban)
  {
     return unsecuredLoan_;
  }
+void Customer::setClosed()  noexcept
+{
+   type_ = CustomerType::Closed;
+}

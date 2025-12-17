@@ -19,11 +19,11 @@ void BankSystem::addCustomer(std::string name, ContactInfrormation contact)
 
     auto newCustomer = std::make_shared<Customer>(name, contact);
 
-    auto [it, inserted] = customerList_.emplace(newCustomer->getID(), newCustomer);
+    auto [it, inserted] = activityCustomerList_.emplace(newCustomer->getID(), newCustomer);
     if(!inserted) { throw DuplicateCustomerId{}; }
 
-    customerList_.emplace(newCustomer->getID(), newCustomer);
-
+    activityCustomerList_.emplace(newCustomer->getID(), newCustomer);
+    archiveCustomer_.emplace(newCustomer->getID(),newCustomer );
     if(contact.email) {idByEmail_.emplace(*contact.email ,newCustomer->getID());}
     if(contact.phone) {idByPhone_.emplace(*contact.phone, newCustomer->getID());}
 }
@@ -39,8 +39,12 @@ void BankSystem::validateContactUniqueness(const ContactInfrormation& contact) c
         throw DuplicatePhone{};
     }
 }
-std::string BankSystem::createAccount(AccountType type)
+void BankSystem::createAccount(int customerID, AccountType type)
 {
+
+        auto customer =  activityCustomerList_.find(customerID);
+        if(customer == activityCustomerList_.end()) {throw CustomerNotFound{}; }
+
     std::string newIbam;
     do
     {
@@ -48,8 +52,10 @@ std::string BankSystem::createAccount(AccountType type)
     }while(accountList_.find(newIbam) != accountList_.end());
 
     auto newAccount = std::make_shared<Account>(newIbam, type);
+    customer->second->addAccount(newIbam);
     accountList_.emplace(newIbam, newAccount);
-    return newIbam;
+
+
 
 }
 void BankSystem::createTransaction(OperationType type, int64_t sum, const std::string& fromAccount)
@@ -87,8 +93,8 @@ void BankSystem::createTransaction(int64_t sum, const std::string& fromAccount, 
  }
 void BankSystem::createLoan(int64_t sum, double rate, int term, int customerID)
 {
-    auto it = customerList_.find(customerID);
-    if(it == customerList_.end()) throw CustomerNotFound {};
+    auto it = activityCustomerList_.find(customerID);
+    if(it == activityCustomerList_.end()) throw CustomerNotFound {};
 
     auto newLoan = std::make_unique<Loan>(sum, rate, term, customerID);
     it->second->addLoan(newLoan->getID());
@@ -101,10 +107,28 @@ void BankSystem::createLoan(int64_t sum, double rate, int term, int customerID)
 
 
 }
- void BankSystem::deleteCustomer(int customerID)
+ void BankSystem::closeCustomer(int customerID)
  {
-   auto customer = customerList_.at(customerID);
+   auto customer = activityCustomerList_.find(customerID);
+   if(customer == activityCustomerList_.end()) return;
 
-   if(customer->getUnsecuredLoan() != 0){throw CustomerLoansNoExtinguished{};}
+   if(customer->second->getUnsecuredLoan() != 0){throw CustomerLoansNoExtinguished{};}
+
+   for(const auto& sum : customer->second->getAccountsList())
+   {
+    const auto acc = accountList_.find(sum);
+
+     if(acc == accountList_.end() || !acc->second) throw AccountNotFound{};
+     if(acc->second->getBalance() != 0) {throw DeleteNotEmptyAccount{};}
+   }
+
+   customer->second->setClosed();
+
+   auto contact = customer->second->getContact();
+   if(contact.email) {idByEmail_.erase(*contact.email);}
+   if(contact.phone) {idByPhone_.erase(*contact.phone);}
+
+   archiveCustomer_.try_emplace(customerID, customer->second);
+   activityCustomerList_.erase(customer);
 
  }

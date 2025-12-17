@@ -30,4 +30,8 @@ public:
     PositiveBalanceDelete() : BankError("Positive balance") {}
 };
 
-
+class DeleteNotEmptyAccount : public BankError
+{
+public:
+ DeleteNotEmptyAccount() : BankError("Not empty account") {}
+};

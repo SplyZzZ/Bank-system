@@ -1,6 +1,7 @@
 #pragma once
 #include "ContactInformation.h"
 #include <vector>
+#include "CustomerType.h"
 class Customer
 {
 public:
@@ -13,9 +14,11 @@ public:
     const std::vector<std::string>& getAccountsList() const noexcept;
     void unsecuredLoan() noexcept;
     unsigned int getUnsecuredLoan() const noexcept;
+    void setClosed()  noexcept;
 private:
     int id_;
     std::string name_;
+    CustomerType type_;
     ContactInfrormation contact_;
     std::vector<std::string> accounts_;
     std::vector<int> loansIdList_;
