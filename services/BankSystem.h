@@ -24,6 +24,7 @@ private:
     std::unordered_map<int, std::shared_ptr<Customer>> archiveCustomer_;
     std::unordered_map<std::string, int> idByEmail_;
     std::unordered_map<std::string, int> idByPhone_;
+    std::unordered_map<int, std::unique_ptr<Loan>> queryLoans_;
     std::unordered_map<std::string, std::shared_ptr<Account>> accountList_;
     std::unordered_map<int, std::shared_ptr<Transaction>> transactionList_;
     std::unordered_map<int, std::unique_ptr<Loan>> loansList_;

@@ -41,9 +41,8 @@ void BankSystem::validateContactUniqueness(const ContactInfrormation& contact) c
 }
 void BankSystem::createAccount(int customerID, AccountType type)
 {
-
-        auto customer =  activityCustomerList_.find(customerID);
-        if(customer == activityCustomerList_.end()) {throw CustomerNotFound{}; }
+      auto customer =  activityCustomerList_.find(customerID);
+    if(customer == activityCustomerList_.end()) {throw CustomerNotFound{}; }
 
     std::string newIbam;
     do
@@ -54,8 +53,6 @@ void BankSystem::createAccount(int customerID, AccountType type)
     auto newAccount = std::make_shared<Account>(newIbam, type);
     customer->second->addAccount(newIbam);
     accountList_.emplace(newIbam, newAccount);
-
-
 
 }
 void BankSystem::createTransaction(OperationType type, int64_t sum, const std::string& fromAccount)
@@ -97,11 +94,12 @@ void BankSystem::createLoan(int64_t sum, double rate, int term, int customerID)
     if(it == activityCustomerList_.end()) throw CustomerNotFound {};
 
     auto newLoan = std::make_unique<Loan>(sum, rate, term, customerID);
-    it->second->addLoan(newLoan->getID());
+    
+    // it->second->addLoan(newLoan->getID());
 
-    auto obs = std::make_shared<ObserverCustomer>(it->second);
-    loanObserversKeepAlive_.push_back(obs);
-    newLoan->attach(obs);
+    // auto obs = std::make_shared<ObserverCustomer>(it->second);
+    // loanObserversKeepAlive_.push_back(obs);
+    // newLoan->attach(obs);
 
     loansList_.emplace(newLoan->getID(), std::move(newLoan) );
 
