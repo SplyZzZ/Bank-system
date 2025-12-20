@@ -11,7 +11,7 @@
 #include "core/AccountType.h"
 #include "IbamGeneretion.h"
 #include "core/errors/CustomerError.h"
-#include "core/ObserverCustomer.h"
+
 #include <cmath>
 #include "core/errors/LoanError.h"
 #include "core/RejectedLoanInfo.h"
@@ -24,7 +24,6 @@ void BankSystem::addCustomer(std::string name, ContactInfrormation contact)
     auto [it, inserted] = activityCustomerList_.emplace(newCustomer->getID(), newCustomer);
     if(!inserted) { throw DuplicateCustomerId{}; }
 
-    activityCustomerList_.emplace(newCustomer->getID(), newCustomer);
     archiveCustomer_.emplace(newCustomer->getID(),newCustomer );
     if(contact.email) {idByEmail_.emplace(*contact.email ,newCustomer->getID());}
     if(contact.phone) {idByPhone_.emplace(*contact.phone, newCustomer->getID());}
@@ -102,7 +101,7 @@ void BankSystem::createLoan(int64_t sum, double rate, int term, int customerID)
 void BankSystem::alghoritmToGiveLoan(std::shared_ptr<Loan> loan)
 {
     auto it = activityCustomerList_.find(loan->getCustomerID());
-    if(it == activityCustomerList_.end()){CustomerNotFound{};}
+    if(it == activityCustomerList_.end()){throw CustomerNotFound{};}
     auto snapshot = it->second->getCreditSnapshot();
     auto profile = it->second->getCustomerProfile();
     double i = loan->getInterestRate();
@@ -164,7 +163,7 @@ void BankSystem::closeCustomer(int customerID)
    auto customer = activityCustomerList_.find(customerID);
    if(customer == activityCustomerList_.end()) return;
 
-   if(customer->second->getUnsecuredLoan() != 0){throw CustomerLoansNoExtinguished{};}
+   if(customer->second->getCreditSnapshot().activeLoans_ != 0){throw CustomerLoansNoExtinguished{};}
 
    for(const auto& sum : customer->second->getAccountsList())
    {

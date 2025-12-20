@@ -3,7 +3,7 @@
 #include <memory>
 #include "Account.h"
 #include "OperationType.h"
-#include <chrono>
+
 class Transaction
 {
 public:
@@ -15,12 +15,12 @@ public:
     std::weak_ptr<Account> getToAccount() const noexcept;
     int64_t getSum() const noexcept;
     OperationType getType() const noexcept;
-    auto  getTime() const noexcept;
+    int  getTime() const noexcept;
 private:
     int id_;
     std::weak_ptr<Account> account_;
     std::weak_ptr<Account> toAccount_;
     int64_t sum_;
     OperationType type_;
-    std::chrono::system_clock::time_point time_;
+    int time_;
 };

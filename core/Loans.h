@@ -1,7 +1,8 @@
 #pragma once
 #include "LoanStatusType.h"
-#include "ISubjectLoan.h"
-class Loan : public ISubjectLoan
+#include <cstdint>
+
+class Loan
 {
 public:
 

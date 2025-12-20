@@ -4,10 +4,10 @@
 class ReportTransaction : public Report
 {
 public:
-    ReportTransaction(const std::vector<shared_ptr<Transaction>>& transactionsList);
+    ReportTransaction(const std::vector<std::shared_ptr<Transaction>>& transactionsList);
 
 protected:
-    virtual Report build() override;
+    virtual void build() override;
 
 private:
     std::vector<std::shared_ptr<Transaction>> transactionsList_;

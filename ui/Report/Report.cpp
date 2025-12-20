@@ -1,6 +1,7 @@
 #include "Report.h"
 
-void Report::genereteReport()
+StructReport Report::genereteReport()
 {
     build();
+    return doc_;
 }

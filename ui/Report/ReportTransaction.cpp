@@ -1,9 +1,9 @@
 #include "ReportTransaction.h"
 #include "../formatters/OperationTypeToString.h"
-ReportTransaction::ReportTransaction(const std::vector<shared_ptr<Transaction>>& transactionsList) : transactionsList_(transactionsList)
+ReportTransaction::ReportTransaction(const std::vector<std::shared_ptr<Transaction>>& transactionsList) : transactionsList_(transactionsList)
 {}
 
-Report ReportTransaction::build()
+void ReportTransaction::build()
 {
     doc_.title = "Transaction report";
     doc_.header = {"ID", "Type", "Sum", "Account", "To account", "Time"};
@@ -24,17 +24,17 @@ Report ReportTransaction::build()
             }
         }
 
-        doc_.informations.emplace_back
-        (
-            {
-                std::to_string(transact->getId()),
-                operationTypeToString(transact->getType()),
-                std::to_string(transact->getSum()),
-                fromIban,
-                toIban,
-                std::to_string(transact->getTime())
-            }
-        );
+       doc_.informations.emplace_back
+       (
+        std::vector<std::string>
+        {
+         std::to_string(transact->getId()),
+         operationTypeToString(transact->getType()),
+         std::to_string(transact->getSum()),
+         fromIban,
+         toIban,
+         std::to_string(transact->getTime())
+        }
+       );
     }
-    return doc_;
 }

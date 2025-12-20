@@ -41,7 +41,7 @@ void Transaction::execute()
 Transaction::Transaction(int64_t sum, OperationType type, std::shared_ptr<Account> account) : account_(account), sum_(sum), type_(type)
 {
     id_ = IdGeneration::next();
-    time_ = std::chrono::system_clock::now();
+    time_ = 0;
 }
 
 int Transaction::getId() const noexcept
@@ -69,7 +69,7 @@ OperationType Transaction::getType() const noexcept
     return type_;
 }
 
-auto  Transaction::getTime() const noexcept
+int  Transaction::getTime() const noexcept
 {
     return time_;
 }
@@ -78,5 +78,5 @@ Transaction::Transaction(int64_t sum, std::shared_ptr<Account> account, std::sha
 {
     id_ = IdGeneration::next();
     type_ = OperationType::transfer;
-    time_ = std::chrono::system_clock::now();
+    time_ = 10;
 }

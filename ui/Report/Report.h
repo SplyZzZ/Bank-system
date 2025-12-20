@@ -4,13 +4,13 @@ class Report
 {
 public:
 
-    void genereteReport();
-    
-    ~Report();
+    StructReport genereteReport();
+
+   virtual ~Report();
 
 protected:
 
-    virtual Report build() const = 0;
+    virtual void build();
 
     StructReport doc_;
 };

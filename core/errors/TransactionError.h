@@ -1,3 +1,4 @@
+#pragma once
 #include "BankError.h"
 
 class TransactionTypeError : public BankError

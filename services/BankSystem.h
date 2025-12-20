@@ -9,7 +9,7 @@
 #include "core/Transaction.h"
 #include "core/OperationType.h"
 #include "core/Loans.h"
-#include "core/IObserverLoan.h"
+
 #include "core/RejectedLoanInfo.h"
 class BankSystem
 {
@@ -38,7 +38,7 @@ public:
     std::unordered_map<std::string, std::shared_ptr<Account>> accountList_;
     std::unordered_map<int, std::shared_ptr<Transaction>> transactionList_;
 
-    std::vector<std::shared_ptr<IObserverLoan>> loanObserversKeepAlive_;
+  
     void validateContactUniqueness(const ContactInfrormation& contact) const;
     std::shared_ptr<Account> findAccountUsIban(const std::string& iban) const;
     void alghoritmToGiveLoan(std::shared_ptr<Loan> loan);

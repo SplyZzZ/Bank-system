@@ -22,12 +22,6 @@ double Loan::getInterestRate() const noexcept
 void Loan::changeStatus(LoanStatusType newType) noexcept
 {
     type_ = newType;
-
-    if(type_ == LoanStatusType::extinguished)
-    {
-        notify();
-    }
-
 }
 int Loan::getID() const noexcept
 {
