@@ -1,6 +1,5 @@
 #pragma once
 #include "LoanStatusType.h"
-#include <memory>
 #include "ISubjectLoan.h"
 class Loan : public ISubjectLoan
 {
@@ -10,10 +9,11 @@ public:
  double calculateInterest() const;
  void changeStatus(LoanStatusType newType) noexcept;
  int getID() const noexcept;
+ int getCustomerID() const noexcept;
+ int64_t getSum() const noexcept;
+ int getTermin() const noexcept;
+ double getInterestRate() const noexcept;
 
- virtual void attach(std::shared_ptr<IObserverLoan>obs) override;
- virtual void dettach() override;
- virtual void notify() override;
 
 private:
     int id_;
@@ -22,5 +22,5 @@ private:
     double interestRate_;
     int term_;
     LoanStatusType type_;
-    std::weak_ptr<IObserverLoan> obs_;
+
 };

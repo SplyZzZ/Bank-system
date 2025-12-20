@@ -4,7 +4,7 @@
 #include <string>
 class CustomerProfile
 {
-    protected:
+    public:
     std::string dateOfBirth;
     std::optional<int64_t> monthlyIncome_;
 };

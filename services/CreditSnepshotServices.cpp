@@ -14,14 +14,15 @@
  {
     auto customer = customers_.at(customerID);
     ++(customer->snapshot_.closedLoansTotal_);
+    --(customer->snapshot_.activeLoans_);
  }
- void CreditSnepshotServices::addLoansEverOverdueTotal(int customerID) noexcept
- {
-      auto customer = customers_.at(customerID);
-    ++(customer->snapshot_.loansEverOverdueTotal_);
- }
+void CreditSnepshotServices::addLoansEverOverdueTotal(int customerID) noexcept
+{
+  auto customer = customers_.at(customerID);
+  ++(customer->snapshot_.loansEverOverdueTotal_);
+}
  void  CreditSnepshotServices::addRepaidOnTimeTotal(int customerID) noexcept
  {
-auto customer = customers_.at(customerID);
+   auto customer = customers_.at(customerID);
     ++(customer->snapshot_.repaidOnTimeTotal_);
  }

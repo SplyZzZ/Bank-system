@@ -15,9 +15,10 @@ public:
     int getID() const noexcept;
     void addLoan(int loanID) noexcept;
     const std::vector<std::string>& getAccountsList() const noexcept;
-    void unsecuredLoan() noexcept;
-    unsigned int getUnsecuredLoan() const noexcept;
     void setClosed()  noexcept;
+
+    const CustomerProfile& getCustomerProfile() const noexcept;
+    const CreditSnapshot& getCreditSnapshot() const noexcept;
 private:
     int id_;
     std::string name_;
@@ -25,7 +26,6 @@ private:
     ContactInfrormation contact_;
     std::vector<std::string> accounts_;
     std::vector<int> loansIdList_;
-    unsigned int unsecuredLoan_;
     CustomerProfile profile_;
     CreditSnapshot snapshot_;
     friend class CreditSnepshotServices;

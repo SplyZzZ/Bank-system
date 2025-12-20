@@ -12,7 +12,9 @@
 #include "IbamGeneretion.h"
 #include "core/errors/CustomerError.h"
 #include "core/ObserverCustomer.h"
-
+#include <cmath>
+#include "core/errors/LoanError.h"
+#include "core/RejectedLoanInfo.h"
 void BankSystem::addCustomer(std::string name, ContactInfrormation contact)
 {
     validateContactUniqueness(contact);
@@ -81,33 +83,84 @@ void BankSystem::createTransaction(int64_t sum, const std::string& fromAccount, 
     if(!inserted) throw DuplicateTransactionId();
 
 }
- std::shared_ptr<Account> BankSystem::findAccountUsIban(const std::string& iban) const
- {
+std::shared_ptr<Account> BankSystem::findAccountUsIban(const std::string& iban) const
+{
     auto it = accountList_.find(iban);
     if(it == accountList_.end()) throw AccountNotFound{};
 
     return it->second;
- }
+}
 void BankSystem::createLoan(int64_t sum, double rate, int term, int customerID)
 {
     auto it = activityCustomerList_.find(customerID);
     if(it == activityCustomerList_.end()) throw CustomerNotFound {};
 
-    auto newLoan = std::make_unique<Loan>(sum, rate, term, customerID);
-    queryLoans_.emplace(newLoan->getID(), std::move(newLoan));
-
-    // it->second->addLoan(newLoan->getID());
-
-    // auto obs = std::make_shared<ObserverCustomer>(it->second);
-    // loanObserversKeepAlive_.push_back(obs);
-    // newLoan->attach(obs);
-
-    // loansList_.emplace(newLoan->getID(), std::move(newLoan) );
-
-
+    auto newLoan = std::make_shared<Loan>(sum, rate, term, customerID);
+    pendingLoans_.emplace(newLoan->getID(), newLoan);
+    alghoritmToGiveLoan(newLoan);
 }
- void BankSystem::closeCustomer(int customerID)
- {
+void BankSystem::alghoritmToGiveLoan(std::shared_ptr<Loan> loan)
+{
+    auto it = activityCustomerList_.find(loan->getCustomerID());
+    if(it == activityCustomerList_.end()){CustomerNotFound{};}
+    auto snapshot = it->second->getCreditSnapshot();
+    auto profile = it->second->getCustomerProfile();
+    double i = loan->getInterestRate();
+    double P = loan->getSum() * i * pow(1 + i, loan->getTermin()) / (pow(1+i,loan->getTermin()) - 1 );
+    size_t k_max = static_cast<size_t>(profile.monthlyIncome_.value() * 0.4 / P);
+    if(k_max >= snapshot.activeLoans_)
+    {
+        RejectedLoanInfo whyRegejecredLoan;
+        whyRegejecredLoan.loan = loan;
+        whyRegejecredLoan.reason = "limits loan";
+        whyRegejecredLoan.rejectedBy = "System";
+        rejectedLoans_.emplace(loan->getID(), whyRegejecredLoan);
+        loansList_.emplace(loan->getID(),loan);
+        pendingLoans_.erase(loan->getID());
+        throw ExceededLoanslimit{};
+    }
+    if(snapshot.repaidOnTimeTotal_ < snapshot.loansEverOverdueTotal_ && loan->getSum() > 50000)
+    {
+        RejectedLoanInfo whyRegejecredLoan;
+        whyRegejecredLoan.loan = loan;
+        whyRegejecredLoan.reason = "Too large an amount, with a delay of more than closed on time";
+        whyRegejecredLoan.rejectedBy = "System";
+        rejectedLoans_.emplace(loan->getID(), whyRegejecredLoan);
+        loansList_.emplace(loan->getID(),loan);
+        pendingLoans_.erase(loan->getID());
+        throw TooMoreSum{};
+    }
+    if(profile.monthlyIncome_ < loan->getSum() / 2)
+    {
+         RejectedLoanInfo whyRegejecredLoan;
+        whyRegejecredLoan.loan = loan;
+        whyRegejecredLoan.reason = "The loan amount is too high compared to income";
+        whyRegejecredLoan.rejectedBy = "System";
+        rejectedLoans_.emplace(loan->getID(), whyRegejecredLoan);
+        loansList_.emplace(loan->getID(),loan);
+        pendingLoans_.erase(loan->getID());
+        throw TooMoreSum{};
+    }
+    if(snapshot.repaidOnTimeTotal_ < 10 && loan->getSum() > 1000000 )
+    {
+         RejectedLoanInfo whyRegejecredLoan;
+        whyRegejecredLoan.loan = loan;
+        whyRegejecredLoan.reason = "Too much money";
+        whyRegejecredLoan.rejectedBy = "System";
+        rejectedLoans_.emplace(loan->getID(), whyRegejecredLoan);
+        loansList_.emplace(loan->getID(),loan);
+        pendingLoans_.erase(loan->getID());
+        throw TooMoreSum{};
+    }
+
+    it->second->addLoan(loan->getID());
+
+    activeLoans_.emplace(loan->getID(), loan);
+    loansList_.emplace(loan->getID(), loan);
+    pendingLoans_.erase(loan->getID());
+}
+void BankSystem::closeCustomer(int customerID)
+{
    auto customer = activityCustomerList_.find(customerID);
    if(customer == activityCustomerList_.end()) return;
 
@@ -130,5 +183,5 @@ void BankSystem::createLoan(int64_t sum, double rate, int term, int customerID)
    archiveCustomer_.try_emplace(customerID, customer->second);
    activityCustomerList_.erase(customer);
 
- }
+}
 

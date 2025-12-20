@@ -1,6 +1,7 @@
 #include "Customer.h"
 #include "errors/AccountError.h"
 #include "../services/IdGeneration.h"
+#include "services/CustomerPrifele.h"
 #include <algorithm>
 
 Customer::Customer(std::string name, ContactInfrormation contact) : name_(std::move(name)), contact_(std::move(contact))
@@ -38,21 +39,20 @@ void Customer::removeAccount(std::string iban)
  void Customer::addLoan(int loanID) noexcept
  {
     loansIdList_.emplace_back(loanID);
-    ++unsecuredLoan_;
  }
  const std::vector<std::string>& Customer::getAccountsList() const noexcept
  {
     return accounts_;
  }
- void Customer::unsecuredLoan() noexcept
- {
-    --unsecuredLoan_;
- }
- unsigned int Customer::getUnsecuredLoan() const noexcept
- {
-    return unsecuredLoan_;
- }
 void Customer::setClosed()  noexcept
 {
    type_ = CustomerType::Closed;
+}
+const CustomerProfile& Customer::getCustomerProfile() const noexcept
+{
+ return profile_;
+}
+const CreditSnapshot& Customer::getCreditSnapshot() const noexcept
+{
+   return snapshot_;
 }
