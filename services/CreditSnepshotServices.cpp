@@ -1,5 +1,9 @@
 #include "CreditSnepshotServices.h"
 #include "core/Customer.h"
+ void CreditSnepshotServices::setMap(std::unordered_map<int, std::shared_ptr<Customer>>& customer)
+ {
+   customers_ = customer;
+ }
  void CreditSnepshotServices::addActivityLoans(int customerID) noexcept
  {
     auto customer = customers_.at(customerID);

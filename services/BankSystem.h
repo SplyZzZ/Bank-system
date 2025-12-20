@@ -11,9 +11,11 @@
 #include "core/Loans.h"
 
 #include "core/RejectedLoanInfo.h"
+#include "services/CreditSnepshotServices.h"
 class BankSystem
 {
 public:
+    BankSystem();
     void addCustomer(std::string name, ContactInfrormation contact);
     void createAccount(int customerID, AccountType type);
     void createTransaction(OperationType type, int64_t sum, const std::string& fromAccount);
@@ -38,8 +40,10 @@ public:
     std::unordered_map<std::string, std::shared_ptr<Account>> accountList_;
     std::unordered_map<int, std::shared_ptr<Transaction>> transactionList_;
 
-  
+
     void validateContactUniqueness(const ContactInfrormation& contact) const;
     std::shared_ptr<Account> findAccountUsIban(const std::string& iban) const;
     void alghoritmToGiveLoan(std::shared_ptr<Loan> loan);
+    CreditSnepshotServices creditServices_;
+
 };

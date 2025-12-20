@@ -15,6 +15,11 @@
 #include <cmath>
 #include "core/errors/LoanError.h"
 #include "core/RejectedLoanInfo.h"
+#include "services/CreditSnepshotServices.h"
+BankSystem::BankSystem()
+{
+    creditServices_.setMap(activityCustomerList_);
+}
 void BankSystem::addCustomer(std::string name, ContactInfrormation contact)
 {
     validateContactUniqueness(contact);
@@ -153,7 +158,7 @@ void BankSystem::alghoritmToGiveLoan(std::shared_ptr<Loan> loan)
     }
 
     it->second->addLoan(loan->getID());
-
+    creditServices_.addActivityLoans(it->second->getID());
     activeLoans_.emplace(loan->getID(), loan);
     loansList_.emplace(loan->getID(), loan);
     pendingLoans_.erase(loan->getID());
@@ -181,6 +186,6 @@ void BankSystem::closeCustomer(int customerID)
 
    archiveCustomer_.try_emplace(customerID, customer->second);
    activityCustomerList_.erase(customer);
-
+   CreditSnepshotServices creditServices;
 }
 
