@@ -159,7 +159,7 @@ void BankSystem::alghoritmToGiveLoan(std::shared_ptr<Loan> loan)
 
     it->second->addLoan(loan->getID());
     creditServices_.addActivityLoans(it->second->getID());
-    activeLoans_.emplace(loan->getID(), loan);
+    activeLoans_.emplace (loan->getID(), loan);
     loansList_.emplace(loan->getID(), loan);
     pendingLoans_.erase(loan->getID());
 }

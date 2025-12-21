@@ -1,6 +1,6 @@
 #include "Customer.h"
 #include "errors/AccountError.h"
-#include "../services/IdGeneration.h"
+#include "services/IdGeneration.h"
 #include "services/CustomerPrifele.h"
 #include <algorithm>
 
