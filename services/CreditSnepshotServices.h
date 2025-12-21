@@ -5,7 +5,7 @@ class Customer;
 class CreditSnepshotServices
 {
 public:
-CreditSnepshotServices();
+  CreditSnepshotServices(std::unordered_map<int, std::shared_ptr<Customer>>& customers);
     void setMap(std::unordered_map<int, std::shared_ptr<Customer>>& customer);
     void addActivityLoans(int customerID) noexcept;
     void addCurrentlyOverdue(int customerID) noexcept;
@@ -13,5 +13,5 @@ CreditSnepshotServices();
     void addLoansEverOverdueTotal(int customerID) noexcept;
     void addRepaidOnTimeTotal(int customerID) noexcept;
 private:
-std::unordered_map<int, std::shared_ptr<Customer>>&  customers_;
+    std::unordered_map<int, std::shared_ptr<Customer>>& customers_;
 };

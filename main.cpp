@@ -3,7 +3,6 @@
 #include "ui/BankSystemMenu.h"
 int main()
 {
-BankSystem bank;
-UIBankSystem UIBank(bank);
-UIBank.run();
+    BankSystem bank;
+    UIBankSystem UIBank(bank);
 }

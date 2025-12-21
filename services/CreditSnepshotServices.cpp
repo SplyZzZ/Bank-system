@@ -1,5 +1,6 @@
 #include "CreditSnepshotServices.h"
 #include "core/Customer.h"
+ CreditSnepshotServices::CreditSnepshotServices(std::unordered_map<int, std::shared_ptr<Customer>>& customers): customers_(customers) {}
  void CreditSnepshotServices::setMap(std::unordered_map<int, std::shared_ptr<Customer>>& customer)
  {
    customers_ = customer;

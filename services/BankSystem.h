@@ -9,7 +9,6 @@
 #include "core/Transaction.h"
 #include "core/OperationType.h"
 #include "core/Loans.h"
-
 #include "core/RejectedLoanInfo.h"
 #include "services/CreditSnepshotServices.h"
 class BankSystem

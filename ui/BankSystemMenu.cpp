@@ -35,13 +35,13 @@ void UIBankSystem::run()
             switch (choice)
             {
                 case 1: addCustomer(); break;
-                case 2: openAccount(); break;
-                case 3: closeAccount(); break;
-                case 4: deposit(); break;
-                case 5: withdraw(); break;
-                case 6: transfer(); break;
-                case 7: loan(); break;
-                case 8: report(); break;
+                // case 2: openAccount(); break;
+                // case 3: closeAccount(); break;
+                // case 4: deposit(); break;
+                // case 5: withdraw(); break;
+                // case 6: transfer(); break;
+                // case 7: loan(); break;
+                // case 8: report(); break;
                 case 0: std::cout << "Exit\n"; break;
                 default: std::cout << "Invalid option\n";
             }

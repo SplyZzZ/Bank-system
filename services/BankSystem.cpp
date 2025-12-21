@@ -11,19 +11,19 @@
 #include "core/AccountType.h"
 #include "IbamGeneretion.h"
 #include "core/errors/CustomerError.h"
-
 #include <cmath>
 #include "core/errors/LoanError.h"
 #include "core/RejectedLoanInfo.h"
 #include "services/CreditSnepshotServices.h"
 BankSystem::BankSystem()
-{
-    creditServices_.setMap(activityCustomerList_);
-}
+        : creditServices_(activityCustomerList_)
+    {
+    }
 void BankSystem::addCustomer(std::string name, ContactInfrormation contact)
 {
     validateContactUniqueness(contact);
 
+    creditServices_.setMap(activityCustomerList_);
     auto newCustomer = std::make_shared<Customer>(name, contact);
 
     auto [it, inserted] = activityCustomerList_.emplace(newCustomer->getID(), newCustomer);
@@ -186,6 +186,6 @@ void BankSystem::closeCustomer(int customerID)
 
    archiveCustomer_.try_emplace(customerID, customer->second);
    activityCustomerList_.erase(customer);
-   CreditSnepshotServices creditServices;
+  
 }
 
