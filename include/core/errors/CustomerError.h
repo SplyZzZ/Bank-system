@@ -13,3 +13,8 @@ public:
     CustomerLoansNoExtinguished() : BankError("Not all loans are closed") {}
 
 };
+class InvalidePassword : public BankError
+{
+    public:
+    InvalidePassword() : BankError("Invalide password") {}
+};

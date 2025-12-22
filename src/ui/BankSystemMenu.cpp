@@ -1,12 +1,13 @@
 #include <exception>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <unistd.h>
 #include "ui/BankSystemMenu.h"
 #include "core/ContactInformation.h"
 #include "services/BankSystem.h"
 #include "utils/ConsoleHelper.h"
-UIBankSystem::UIBankSystem(BankSystem& bank) : bank_(bank) {}
+UIBankSystem::UIBankSystem(BankSystem& bank, UserSession& user) : bank_(bank), user_(user) {}
 void UIBankSystem::printMenu()
 {
     std::cout << "\n=== BANK SYSTEM ===\n";
@@ -23,26 +24,27 @@ void UIBankSystem::printMenu()
 }
 void UIBankSystem::run()
 {
+    authorization();
 
     int choice = -1;
 
     while (choice != 0)
     {
         printMenu();
-        std::cin >> choice;
+        choice = readNumber<int>();
 
         try {
             switch (choice)
             {
                 case 1: addCustomer(); break;
-                // case 2: openAccount(); break;
+                case 2: openAccount(); break;
                 // case 3: closeAccount(); break;
                 // case 4: deposit(); break;
                 // case 5: withdraw(); break;
                 // case 6: transfer(); break;
                 // case 7: loan(); break;
                 // case 8: report(); break;
-                case 0: std::cout << "Exit\n"; break;
+                // case 0: std::cout << "Exit\n"; break;
                 default: std::cout << "Invalid option\n";
             }
         }
@@ -53,31 +55,14 @@ void UIBankSystem::run()
 }
 void UIBankSystem::addCustomer()
 {
-    std::cout << "Введіть ім'я клієнта: ";
-    std::string name = readLine();
-    ContactInfrormation customerContact;
-
-    std::cout << "Бажаєте ввести адресу?\n1 - Так\nБудь яка інша клавіша - Ні\n";
-    int selection = readNumber<int>();
-    if(selection == 1)
-    {
-         std::cout << "Введіть адресу клієнта: ";
-        customerContact.address = readLine();
-    }
-    std::cout << "Бажаєте ввести емеїл?\n1 - Так\nБудь яка інша клавіша - Ні\n";
-    selection = readNumber<int>();
-    if(selection == 1)
-    {
-    std::cout << "Введіть емеїл клієнта: ";
-    customerContact.email = readLine();
-    }
-    std::cout << "Введіть номер телефону клієнта: ";
-    customerContact.phone = readLine();
+   
     while(true)
     {
+    auto input = readCustomerInput();
         try
         {
-            bank_.addCustomer(name, customerContact);
+            bank_.addCustomer(input.name, input.pass, input.contact);
+            std::cout << "Користувача успішно додано!\n";
             break;
         }
         catch(std::exception& e)
@@ -86,8 +71,106 @@ void UIBankSystem::addCustomer()
              std::cout << "Please try again.\n";
         }
     }
-
+}
+void UIBankSystem::openAccount()
+{
 
 }
+UIBankSystem::MenuResult UIBankSystem::loginMenu()
+{
+    
+    while (true)
+    {
 
+        try
+        {
+            std::cout << "Введіть номер телефону користувача: ";
+            std::string phoneNumber = readLine();
+            std::cout << "Введіть пароль користувача: ";
+            std::string pass = readLine();
+            user_.user_ = bank_.login(phoneNumber, pass);
+            return MenuResult::Success;
+        }
+        catch (const std::exception& e)
+        {
+            std::cout << "Error: " << e.what() << "\n";
+            std::cout << "Якщо бажаєте зареєструватися натисніть 1: ";
+
+            int tmp = readNumber<int>();
+            if (tmp == 1)
+            {
+                return MenuResult::GoToRegister;
+            }
+
+            std::cout << "Please try again.\n";
+        }
+    }
+}
+UIBankSystem::MenuResult UIBankSystem::registerMenu()
+{
+
+    while(true)
+    {
+        auto input = readCustomerInput();
+        try
+        {
+            user_.user_ = bank_.addCustomer(input.name, input.pass, input.contact);
+            return MenuResult::Success;
+        }
+        catch (const std::exception& e)
+        {
+            std::cout << "Error: " << e.what() << "\n";
+            return MenuResult::Retry;
+        }
+    }
+}
+UIBankSystem::CustomerInput UIBankSystem::readCustomerInput()
+{
+    CustomerInput input;
+
+    std::cout << "Введіть ім'я клієнта: ";
+    input.name = readLine();
+
+    std::cout << "Введіть пароль клієнта: ";
+    input.pass = readLine();
+
+    std::cout << "Бажаєте ввести адресу?\n1 - Так\nІнше - Ні\n";
+    if (readNumber<int>() == 1)
+    {
+        std::cout << "Введіть адресу клієнта: ";
+        input.contact.address = readLine();
+    }
+
+    std::cout << "Бажаєте ввести email?\n1 - Так\nІнше - Ні\n";
+    if (readNumber<int>() == 1)
+    {
+        std::cout << "Введіть email клієнта: ";
+        input.contact.email = readLine();
+    }
+
+    std::cout << "Введіть номер телефону клієнта: ";
+    input.contact.phone = readLine();
+
+    return input;
+}
+void UIBankSystem::authorization()
+{
+    while (true)
+    {
+     
+        switch (loginMenu())
+        {
+            case MenuResult::Success:
+                return;
+
+            case MenuResult::GoToRegister:
+                if(registerMenu() == MenuResult::Success) return;
+             
+                break;
+
+            case MenuResult::Retry:
+                break;
+        }
+    }
+}
 

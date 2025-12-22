@@ -3,7 +3,8 @@
 #include "services/IdGeneration.h"
 #include "services/CustomerPrifele.h"
 #include <algorithm>
-Customer::Customer(std::string name, ContactInfrormation contact) : name_(std::move(name)), contact_(std::move(contact))
+
+Customer::Customer(std::string name, std::string pass, ContactInfrormation contact) : name_(std::move(name)), contact_(std::move(contact)), password_(std::move(pass))
 {
     id_ = IdGeneration::next();
     type_ = CustomerType::Activity;
@@ -25,7 +26,10 @@ const ContactInfrormation& Customer::getContact() const noexcept
 {
     return contact_;
 }
-
+ std::string Customer::getPass() const noexcept
+ {
+   return password_;
+ }
 void Customer::removeAccount(std::string iban)
 {
    auto it = std::find(accounts_.begin(), accounts_.end(), iban);

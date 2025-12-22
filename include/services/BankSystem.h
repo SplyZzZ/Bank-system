@@ -1,4 +1,5 @@
 #pragma once
+#include <map>
 #include <unordered_map>
 #include "core/AccountType.h"
 #include "core/ContactInformation.h"
@@ -15,18 +16,18 @@ class BankSystem
 {
 public:
     BankSystem();
-    void addCustomer(std::string name, ContactInfrormation contact);
+    std::shared_ptr<Customer> addCustomer(std::string name,std::string pass, ContactInfrormation contact);
     void createAccount(int customerID, AccountType type);
     void createTransaction(OperationType type, int64_t sum, const std::string& fromAccount);
     void createTransaction(int64_t sum, const std::string& fromAccount, const std::string& toAccount);
     void createLoan(int64_t sum, double rate, int term, int customerID);
     void closeCustomer(int customerID);
-
+    std::shared_ptr<Customer> login(std::string phoneNumber, std::string pass) const;
     private:
     std::unordered_map<int, std::shared_ptr<Customer>> activityCustomerList_;
     std::unordered_map<int, std::shared_ptr<Customer>> archiveCustomer_;
-    std::unordered_map<std::string, int> idByEmail_;
-    std::unordered_map<std::string, int> idByPhone_;
+    std::map<std::string, int> idByEmail_;
+    std::map<std::string, int> idByPhone_;
 
 
     std::unordered_map<int, std::shared_ptr<Loan>> loansList_;

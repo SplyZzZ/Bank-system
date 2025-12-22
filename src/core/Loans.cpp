@@ -9,7 +9,7 @@ Loan::Loan(int64_t sum, double rate, int term, int customerID) : customerID_(cus
 
 double Loan::calculateInterest() const
 {
-    return sum_*interestRate_*(term_ / 12);
+    return sum_*interestRate_*(static_cast<double>(term_) / 12);
 }
 int Loan::getCustomerID() const noexcept
 {

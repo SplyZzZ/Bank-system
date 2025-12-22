@@ -19,12 +19,12 @@ BankSystem::BankSystem()
         : creditServices_(activityCustomerList_)
     {
     }
-void BankSystem::addCustomer(std::string name, ContactInfrormation contact)
+std::shared_ptr<Customer> BankSystem::addCustomer(std::string name, std::string pass, ContactInfrormation contact)
 {
     validateContactUniqueness(contact);
 
     creditServices_.setMap(activityCustomerList_);
-    auto newCustomer = std::make_shared<Customer>(name, contact);
+    auto newCustomer = std::make_shared<Customer>(name, pass, contact);
 
     auto [it, inserted] = activityCustomerList_.emplace(newCustomer->getID(), newCustomer);
     if(!inserted) { throw DuplicateCustomerId{}; }
@@ -32,6 +32,7 @@ void BankSystem::addCustomer(std::string name, ContactInfrormation contact)
     archiveCustomer_.emplace(newCustomer->getID(),newCustomer );
     if(contact.email) {idByEmail_.emplace(*contact.email ,newCustomer->getID());}
     if(contact.phone) {idByPhone_.emplace(*contact.phone, newCustomer->getID());}
+    return newCustomer;
 }
 void BankSystem::validateContactUniqueness(const ContactInfrormation& contact) const
 {
@@ -47,7 +48,7 @@ void BankSystem::validateContactUniqueness(const ContactInfrormation& contact) c
 }
 void BankSystem::createAccount(int customerID, AccountType type)
 {
-      auto customer =  activityCustomerList_.find(customerID);
+    auto customer =  activityCustomerList_.find(customerID);
     if(customer == activityCustomerList_.end()) {throw CustomerNotFound{}; }
 
     std::string newIbam;
@@ -186,6 +187,14 @@ void BankSystem::closeCustomer(int customerID)
 
    archiveCustomer_.try_emplace(customerID, customer->second);
    activityCustomerList_.erase(customer);
-  
 }
+ std::shared_ptr<Customer> BankSystem::login(std::string phoneNumber, std::string pass) const
+ {
+   auto it =  idByPhone_.find(phoneNumber);
+   if(it == idByPhone_.end()){ throw CustomerNotFound{};}
+   auto user = activityCustomerList_.find(it->second);
+   if(user == activityCustomerList_.end()) { throw CustomerNotFound{}; }
+   if(user->second->getPass() != pass) { throw InvalidePassword{};}
+   return user->second;
+ }
 
