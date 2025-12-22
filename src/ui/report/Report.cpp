@@ -1,4 +1,4 @@
-#include "Report.h"
+#include "ui/report/Report.h"
 
 StructReport Report::genereteReport()
 {

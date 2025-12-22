@@ -5,4 +5,5 @@ int main()
 {
     BankSystem bank;
     UIBankSystem UIBank(bank);
+    UIBank.run();
 }

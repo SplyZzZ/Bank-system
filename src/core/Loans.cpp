@@ -1,4 +1,4 @@
-#include "Loans.h"
+#include "core/Loans.h"
 #include "services/IdGeneration.h"
 #include "core/LoanStatusType.h"
 Loan::Loan(int64_t sum, double rate, int term, int customerID) : customerID_(customerID), sum_(sum), interestRate_(rate/ 12), term_(term)
@@ -27,4 +27,11 @@ int Loan::getID() const noexcept
 {
     return id_;
 }
-
+int64_t Loan::getSum() const noexcept
+{
+    return sum_;
+}
+int Loan::getTermin() const noexcept
+{
+    return term_;
+}

@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "../core/AccountType.h"
+#include "core/AccountType.h"
 inline std::string accountTypeToString(const AccountType type)
 {
     switch(type)

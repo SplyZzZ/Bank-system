@@ -1,9 +1,8 @@
-#include "Customer.h"
-#include "errors/AccountError.h"
+#include "core/Customer.h"
+#include "core/errors/AccountError.h"
 #include "services/IdGeneration.h"
 #include "services/CustomerPrifele.h"
 #include <algorithm>
-
 Customer::Customer(std::string name, ContactInfrormation contact) : name_(std::move(name)), contact_(std::move(contact))
 {
     id_ = IdGeneration::next();

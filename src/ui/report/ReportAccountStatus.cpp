@@ -1,4 +1,4 @@
-#include "ReportAccountStatus.h"
+#include "ui/report/ReportAccountStatus.h"
 
 #include "ui/formatters/AccountTypeToString.h"
 ReportAccountStatus::ReportAccountStatus(const std::vector<std::shared_ptr<Account>>& accountList) : accountList_(accountList){};

@@ -1,5 +1,5 @@
-#include "ReportTransaction.h"
-#include "../formatters/OperationTypeToString.h"
+#include "ui/report/ReportTransaction.h"
+#include "ui/formatters/OperationTypeToString.h"
 ReportTransaction::ReportTransaction(const std::vector<std::shared_ptr<Transaction>>& transactionsList) : transactionsList_(transactionsList)
 {}
 
