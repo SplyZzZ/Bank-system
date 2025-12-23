@@ -33,10 +33,11 @@ private:
     void addCustomer();
     void openAccount();
     void closeAccount();
-
-    // void deposit();
-    // void withdraw();
-    // void transfer();
+    void deposit();
+    void newTransaction();
+    void withdraw();
+    void transfer();
+    void printIbanList(const std::vector<std::string>& ibanList);
     // void loan();
     // void report();
     
