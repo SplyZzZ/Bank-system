@@ -60,20 +60,37 @@ void UIBankSystem::run()
 }
 void UIBankSystem::newTransaction()
 {
-    std::cout << "Виберіть тип транзакції: ";
-    std::cout << "0 - " << operationTypeToString(OperationType::introduction) << "\n";
-    std::cout << "1 - " << operationTypeToString(OperationType::removal) << "\n";
-    std::cout << "2 - " << operationTypeToString(OperationType::transfer) << "\n";
-    int selection = readNumber<int>();
-    switch (selection) 
+    while(true)
     {
-        case 0:
+        std::cout << "Виберіть тип транзакції: ";
+        std::cout << "0 - " << operationTypeToString(OperationType::introduction) << "\n";
+        std::cout << "1 - " << operationTypeToString(OperationType::removal) << "\n";
+        std::cout << "2 - " << operationTypeToString(OperationType::transfer) << "\n";
+        int selection = readNumber<int>();
+        switch (selection) 
         {
-            deposit();
-            return;
+            case 0:
+            {
+                deposit();
+                return;
+            }
+            case 1:
+            {
+                withdraw();
+                return;
+            }
+            case 3:
+            {
+                transfer();
+                return;
+            }
+            default:
+            {
+                std::cout << "Invalude option";
+                break;
+            }
         }
     }
-    
 }
 void UIBankSystem::deposit()
 {
@@ -100,6 +117,64 @@ void UIBankSystem::deposit()
                     }
         }
    }
+}
+void UIBankSystem::withdraw()
+{
+
+ auto ibanList = user_.user_->getAccountsList();
+   printIbanList(ibanList);
+   
+   while(true)
+   {
+        std::cout << "Введіть рахунок з якого бажаєте списати кошти: ";
+        std::string iban = readLine();
+        std::cout << "Введіть суму : ";
+        uint64_t sum = readNumber<uint64_t>();
+        try 
+        {
+            bank_.createTransaction(OperationType::removal, sum, iban);
+        } catch (const std::exception& e)
+        {
+        std::cout << "Error: " << e.what() << '\n';
+        std::cout << "Для відміни нажміть 1: ";
+                    int tmp = readNumber<int>();
+                    if(tmp == 1)
+                    {
+                        return;
+                    }
+        }
+   }
+
+}
+void UIBankSystem::transfer()
+{
+     auto ibanList = user_.user_->getAccountsList();
+   printIbanList(ibanList);
+   
+   while(true)
+   {
+        std::cout << "Введіть рахунок з якого бажаєте переказати кошти: ";
+        std::string fromIban = readLine();
+        std::cout << "Введіть рахунок куда бажаєте переказати кошти: ";
+        std::string toIban = readLine();
+        std::cout << "Введіть суму : ";
+        uint64_t sum = readNumber<uint64_t>();
+        try 
+        {
+            bank_.createTransaction(sum, fromIban, toIban);
+        } catch (const std::exception& e)
+        {
+        std::cout << "Error: " << e.what() << '\n';
+        std::cout << "Для відміни нажміть 1: ";
+                    int tmp = readNumber<int>();
+                    if(tmp == 1)
+                    {
+                        return;
+                    }
+        }
+   }
+
+
 }
 void UIBankSystem::printIbanList(const std::vector<std::string>& ibanList)
 {
