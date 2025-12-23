@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include "ui/BankSystemMenu.h"
 #include "core/ContactInformation.h"
+#include "ui/formatters/AccountTypeToString.h"
 #include "services/BankSystem.h"
 #include "utils/ConsoleHelper.h"
 UIBankSystem::UIBankSystem(BankSystem& bank, UserSession& user) : bank_(bank), user_(user) {}
@@ -38,7 +39,7 @@ void UIBankSystem::run()
             {
                 case 1: addCustomer(); break;
                 case 2: openAccount(); break;
-                // case 3: closeAccount(); break;
+                case 3: closeAccount(); break;
                 // case 4: deposit(); break;
                 // case 5: withdraw(); break;
                 // case 6: transfer(); break;
@@ -74,7 +75,47 @@ void UIBankSystem::addCustomer()
 }
 void UIBankSystem::openAccount()
 {
+    while(true)
+    {
+        std::cout << "Виберіть тип рахунку: ";
 
+        std::cout << "0 - " << accountTypeToString(AccountType::Current) << "\n";
+        std::cout << "1 - "  << accountTypeToString(AccountType::Savings) << "\n";
+        int selection = readNumber<int>();
+        try
+        {
+            switch (selection)
+            {
+            case 0:
+            {
+                bank_.createAccount(user_.user_->getID(), AccountType::Current);
+                return;
+            }
+            case 1:
+            {
+                bank_.createAccount(user_.user_->getID(), AccountType::Savings);
+                return;
+            }
+            default:
+            {
+                std::cout << "No";
+                throw std::runtime_error("Incorrect account type");
+            }
+
+            }
+        }catch(const std::exception& e)
+        {
+            std::cout << "Error: " << e.what() << "\n";
+            std::cout << "Для виходу нажміть 1: ";
+            int tmp = readNumber<int>();
+            if(selection == 1)
+            {
+                return;
+            }
+
+        }
+    }
+        
 }
 UIBankSystem::MenuResult UIBankSystem::loginMenu()
 {
