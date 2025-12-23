@@ -32,7 +32,8 @@ private:
     CustomerInput readCustomerInput();
     void addCustomer();
     void openAccount();
-    // void closeAccount();
+    void closeAccount();
+
     // void deposit();
     // void withdraw();
     // void transfer();
