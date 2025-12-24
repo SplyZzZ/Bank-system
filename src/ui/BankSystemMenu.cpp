@@ -1,13 +1,17 @@
+#include <cstdint>
 #include <exception>
 #include <iostream>
 #include <memory>
 #include <string>
+
 #include <unistd.h>
 #include "ui/BankSystemMenu.h"
 #include "core/ContactInformation.h"
+#include "core/OperationType.h"
 #include "ui/formatters/AccountTypeToString.h"
 #include "services/BankSystem.h"
 #include "utils/ConsoleHelper.h"
+#include "ui/formatters/OperationTypeToString.h"
 UIBankSystem::UIBankSystem(BankSystem& bank, UserSession& user) : bank_(bank), user_(user) {}
 void UIBankSystem::printMenu()
 {
@@ -15,11 +19,9 @@ void UIBankSystem::printMenu()
     std::cout << "1. Add customer\n";
     std::cout << "2. Open account\n";
     std::cout << "3. Close account\n";
-    std::cout << "4. Deposit money\n";
-    std::cout << "5. Withdraw money\n";
-    std::cout << "6. Transfer money\n";
-    std::cout << "7. Issue loan\n";
-    std::cout << "8. Show reports\n";
+    std::cout << "4. new transaction\n";
+    std::cout << "5. Issue loan\n";
+    std::cout << "6. Show reports\n";
     std::cout << "0. Exit\n";
     std::cout << "Choose option: ";
 }
@@ -40,18 +42,191 @@ void UIBankSystem::run()
                 case 1: addCustomer(); break;
                 case 2: openAccount(); break;
                 case 3: closeAccount(); break;
-                // case 4: deposit(); break;
+                case 4: newTransaction(); break;
                 // case 5: withdraw(); break;
                 // case 6: transfer(); break;
-                // case 7: loan(); break;
-                // case 8: report(); break;
-                // case 0: std::cout << "Exit\n"; break;
+                case 5: loan(); break;
+                case 6: report(); break;
+                case 0: std::cout << "Exit\n"; break;
                 default: std::cout << "Invalid option\n";
             }
         }
         catch (const std::exception& e) {
             std::cout << "Error: " << e.what() << '\n';
         }
+    }
+}
+void UIBankSystem::loan()
+{
+    while(true)
+    {
+        try 
+        {
+            std::cout << "Введіть суму яку бажаєте взяти в кредит: ";
+            uint64_t sum = readNumber<uint64_t>();
+            std::cout << "Введіть проценти: ";
+            double rate = readNumber<double>();
+            std::cout << "Введіть термін в місяцях: ";
+            uint term = readNumber<uint>();
+            bank_.createLoan(sum,  rate,  term,  user_.user_->getID());
+            std::cout << "Кредит успішнно виданий!";
+            return;
+        }catch(const std::exception& e)
+        {
+            std::cout << "Error: " << e.what() << '\n';
+            std::cout << "Для відміни нажміть 1: ";
+            int tmp = readNumber<int>();
+            if(tmp == 1)
+            {
+                return;
+            }
+        }
+    
+    }
+}
+void UIBankSystem::report()
+{
+    try 
+    {
+        std::cout << "Виберіть тип звіту: ";
+        std::cout << "1 - Статус рахунків";
+        std::cout << "2 - Транзакції";
+        uint selection = readNumber<uint>();
+        auto report = bank_.GenerationReport(selection);
+        auto doc = report->genereteReport();
+        report->print(doc);
+    }catch(const std::exception& e)
+    {
+            std::cout << "Error: " << e.what() << '\n';
+    }
+}
+void UIBankSystem::newTransaction()
+{
+    while(true)
+    {
+        std::cout << "Виберіть тип транзакції: ";
+        std::cout << "0 - " << operationTypeToString(OperationType::introduction) << "\n";
+        std::cout << "1 - " << operationTypeToString(OperationType::removal) << "\n";
+        std::cout << "2 - " << operationTypeToString(OperationType::transfer) << "\n";
+        int selection = readNumber<int>();
+        switch (selection) 
+        {
+            case 0:
+            {
+                deposit();
+                return;
+            }
+            case 1:
+            {
+                withdraw();
+                return;
+            }
+            case 3:
+            {
+                transfer();
+                return;
+            }
+            default:
+            {
+                std::cout << "Invalude option";
+                break;
+            }
+        }
+    }
+}
+void UIBankSystem::deposit()
+{
+   auto ibanList = user_.user_->getAccountsList();
+   printIbanList(ibanList);
+   
+   while(true)
+   {
+        std::cout << "Введіть рахунок для поповненя: ";
+        std::string iban = readLine();
+        std::cout << "Введіть суму для поповнення: ";
+        uint64_t sum = readNumber<uint64_t>();
+        try 
+        {
+            bank_.createTransaction(OperationType::introduction, sum, iban);
+            return;
+        } catch (const std::exception& e)
+        {
+            std::cout << "Error: " << e.what() << '\n';
+            std::cout << "Для відміни нажміть 1: ";
+            int tmp = readNumber<int>();
+            if(tmp == 1)
+            {
+                return;
+            }
+        }
+   }
+}
+void UIBankSystem::withdraw()
+{
+
+ auto ibanList = user_.user_->getAccountsList();
+   printIbanList(ibanList);
+   
+   while(true)
+   {
+        std::cout << "Введіть рахунок з якого бажаєте списати кошти: ";
+        std::string iban = readLine();
+        std::cout << "Введіть суму : ";
+        uint64_t sum = readNumber<uint64_t>();
+        try 
+        {
+            bank_.createTransaction(OperationType::removal, sum, iban);
+            return;
+        } catch (const std::exception& e)
+        {
+            std::cout << "Error: " << e.what() << '\n';
+            std::cout << "Для відміни нажміть 1: ";
+            int tmp = readNumber<int>();
+            if(tmp == 1)
+            {
+                return;
+            }
+        }
+   }
+
+}
+void UIBankSystem::transfer()
+{
+     auto ibanList = user_.user_->getAccountsList();
+   printIbanList(ibanList);
+   
+   while(true)
+   {
+        std::cout << "Введіть рахунок з якого бажаєте переказати кошти: ";
+        std::string fromIban = readLine();
+        std::cout << "Введіть рахунок куда бажаєте переказати кошти: ";
+        std::string toIban = readLine();
+        std::cout << "Введіть суму : ";
+        uint64_t sum = readNumber<uint64_t>();
+        try 
+        {
+            bank_.createTransaction(sum, fromIban, toIban);
+            return;
+        } catch (const std::exception& e)
+        {
+            std::cout << "Error: " << e.what() << '\n';
+            std::cout << "Для відміни нажміть 1: ";
+            int tmp = readNumber<int>();
+            if(tmp == 1)
+            {
+                return;
+            }
+        }
+   }
+
+
+}
+void UIBankSystem::printIbanList(const std::vector<std::string>& ibanList)
+{
+    std::cout << "iban list: ";
+    for(const auto& iban : ibanList)
+    {
+        std::cout << iban << "\n";
     }
 }
 void UIBankSystem::addCustomer()
@@ -64,7 +239,7 @@ void UIBankSystem::addCustomer()
         {
             bank_.addCustomer(input.name, input.pass, input.contact);
             std::cout << "Користувача успішно додано!\n";
-            break;
+            return;
         }
         catch(std::exception& e)
         {
@@ -108,7 +283,7 @@ void UIBankSystem::openAccount()
             std::cout << "Error: " << e.what() << "\n";
             std::cout << "Для виходу нажміть 1: ";
             int tmp = readNumber<int>();
-            if(selection == 1)
+            if(tmp == 1)
             {
                 return;
             }
@@ -116,6 +291,20 @@ void UIBankSystem::openAccount()
         }
     }
         
+}
+void UIBankSystem::closeAccount()
+{
+    try 
+    {
+   
+    std::cout << "Виберіть який рахунок бажаєте закрити!\n";
+    printIbanList(user_.user_->getAccountsList());
+    std::string iban = readLine();
+    bank_.closeAccount(iban);
+    }catch(const std::exception& e)
+    {
+           std::cout << "Error: " << e.what() << "\n";
+    }
 }
 UIBankSystem::MenuResult UIBankSystem::loginMenu()
 {

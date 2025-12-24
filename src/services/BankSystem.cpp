@@ -1,5 +1,6 @@
 #include "services/BankSystem.h"
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include "core/Account.h"
 #include "core/ContactInformation.h"
@@ -57,10 +58,10 @@ void BankSystem::createAccount(int customerID, AccountType type)
     auto customer =  activityCustomerList_.find(customerID);
     if(customer == activityCustomerList_.end()) {throw CustomerNotFound{}; }
 
-    std::string newIbam;
+    std::string newIbam = "4";
     do
     {
-      newIbam = IbamGeneretion();
+      newIbam = "324";
     }while(accountList_.find(newIbam) != accountList_.end());
 
     auto newAccount = std::make_shared<Account>(newIbam, type, customerID);
@@ -104,6 +105,7 @@ std::shared_ptr<Account> BankSystem::findAccountUsIban(const std::string& iban) 
 }
 void BankSystem::createLoan(int64_t sum, double rate, int term, int customerID)
 {
+    if(rate < 0.0 || term < 0) {throw std::invalid_argument("Не правильно введений термін або процент");}
     auto it = activityCustomerList_.find(customerID);
     if(it == activityCustomerList_.end()) throw CustomerNotFound {};
 
@@ -228,6 +230,7 @@ void BankSystem::closeAccount(std::string iban)
     closedAccountList_.try_emplace(it->second->getIbam(), it->second);
     activityAccountList_.erase(it);
 }
+
 std::shared_ptr<Report> BankSystem::GenerationReport(uint type)
 {
   
@@ -247,3 +250,4 @@ std::shared_ptr<Report> BankSystem::GenerationReport(uint type)
         }
     }
 }
+
