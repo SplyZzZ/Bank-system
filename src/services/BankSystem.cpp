@@ -18,7 +18,7 @@
 #include "core/RejectedLoanInfo.h"
 #include "services/CreditSnepshotServices.h"
 BankSystem::BankSystem()
-        : creditServices_(activityCustomerList_)
+        : creditServices_(archiveCustomer_)
     {
     }
 std::shared_ptr<Customer> BankSystem::addCustomer(std::string name, std::string pass, ContactInfrormation contact)
@@ -59,9 +59,10 @@ void BankSystem::createAccount(int customerID, AccountType type)
       newIbam = IbamGeneretion();
     }while(accountList_.find(newIbam) != accountList_.end());
 
-    auto newAccount = std::make_shared<Account>(newIbam, type);
+    auto newAccount = std::make_shared<Account>(newIbam, type, customerID);
     customer->second->addAccount(newIbam);
     accountList_.emplace(newIbam, newAccount);
+    activityAccountList_.emplace(newIbam, newAccount);
 
 }
 void BankSystem::createTransaction(OperationType type, int64_t sum, const std::string& fromAccount)
@@ -209,8 +210,17 @@ void BankSystem::closeLoan(std::shared_ptr<Loan> loan)
    
     closedLoans_.try_emplace(it->second->getID(),it->second);
     activeLoans_.erase(it);
+   creditServices_.addClosedLoans(loan->getCustomerID());
 }
 void BankSystem::closeAccount(std::string iban)
 {
-
+    auto it = activityAccountList_.find(iban);
+    if(it== activityAccountList_.end()) { throw AccountNotActivity{};}
+    if(it->second->getBalance() != 0) { throw DeleteNotEmptyAccount{}; }
+    auto customerIt = archiveCustomer_.find(it->second->getCustomerId());
+    if(customerIt == archiveCustomer_.end()) { throw CustomerNotFound {}; }   
+    it->second->changeType(AccountType::Closed);
+    customerIt->second->removeAccount(it->second->getIbam());
+    closedAccountList_.try_emplace(it->second->getIbam(), it->second);
+    activityAccountList_.erase(it);
 }

@@ -33,10 +33,7 @@ const ContactInfrormation& Customer::getContact() const noexcept
 void Customer::removeAccount(std::string iban)
 {
    auto it = std::find(accounts_.begin(), accounts_.end(), iban);
-   if(it == accounts_.end())
-   {
-    throw DuplicateAccount{};
-   }
+  
    accounts_.erase(it);
 }
  void Customer::addLoan(int loanID) noexcept

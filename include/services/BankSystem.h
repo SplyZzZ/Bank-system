@@ -40,6 +40,8 @@ public:
 
 
     std::unordered_map<std::string, std::shared_ptr<Account>> accountList_;
+    std::unordered_map<std::string, std::shared_ptr<Account>> activityAccountList_;
+    std::unordered_map<std::string, std::shared_ptr<Account>> closedAccountList_;
     std::unordered_map<int, std::shared_ptr<Transaction>> transactionList_;
 
 
