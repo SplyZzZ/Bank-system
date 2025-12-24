@@ -5,11 +5,15 @@ Loan::Loan(int64_t sum, double rate, int term, int customerID) : customerID_(cus
 {
     id_ = IdGeneration::next();
     type_ = LoanStatusType::issued;
+    globalSum_ = sum_;
 }
-
+int64_t Loan::getGlobalSum() const noexcept
+{
+ return globalSum_;
+}
 double Loan::calculateInterest() const
 {
-    return sum_*interestRate_*(static_cast<double>(term_) / 12);
+    return globalSum_*interestRate_*(static_cast<double>(term_) / 12);
 }
 int Loan::getCustomerID() const noexcept
 {

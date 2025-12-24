@@ -22,6 +22,8 @@ public:
     void createTransaction(int64_t sum, const std::string& fromAccount, const std::string& toAccount);
     void createLoan(int64_t sum, double rate, int term, int customerID);
     void closeCustomer(int customerID);
+    void closeLoan(std::shared_ptr<Loan> loan);
+    void closeAccount(std::string iban);
     std::shared_ptr<Customer> login(std::string phoneNumber, std::string pass) const;
     private:
     std::unordered_map<int, std::shared_ptr<Customer>> activityCustomerList_;

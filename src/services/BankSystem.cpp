@@ -3,6 +3,8 @@
 #include <string>
 #include "core/Account.h"
 #include "core/ContactInformation.h"
+#include "core/Customer.h"
+#include "core/LoanStatusType.h"
 #include "core/Loans.h"
 #include "core/Transaction.h"
 #include "core/errors/AccountError.h"
@@ -197,4 +199,18 @@ void BankSystem::closeCustomer(int customerID)
    if(user->second->getPass() != pass) { throw InvalidePassword{};}
    return user->second;
  }
+ 
+void BankSystem::closeLoan(std::shared_ptr<Loan> loan)
+{
+    auto it = activeLoans_.find(loan->getID());
+    if(it == activeLoans_.end()) { throw LoanIsNotActivity{}; }
+    if(it->second->getSum() != it->second->getGlobalSum()) {LoanHasNotBeenRepaid{};}
+    loan->changeStatus(LoanStatusType::extinguished);
+   
+    closedLoans_.try_emplace(it->second->getID(),it->second);
+    activeLoans_.erase(it);
+}
+void BankSystem::closeAccount(std::string iban)
+{
 
+}
