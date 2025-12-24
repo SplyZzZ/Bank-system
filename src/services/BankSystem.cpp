@@ -121,8 +121,13 @@ void BankSystem::alghoritmToGiveLoan(std::shared_ptr<Loan> loan)
     auto profile = it->second->getCustomerProfile();
     double i = loan->getInterestRate();
     double P = loan->getSum() * i * pow(1 + i, loan->getTermin()) / (pow(1+i,loan->getTermin()) - 1 );
-    size_t k_max = static_cast<size_t>(profile.monthlyIncome_.value() * 0.4 / P);
-    if(k_max >= snapshot.activeLoans_)
+    size_t k_max = 0;
+   if (profile.monthlyIncome_.has_value()) { size_t k_max = static_cast<size_t>(profile.monthlyIncome_.value() * 0.4 / P);} 
+   else
+    {
+        k_max = 5000;
+     }
+    if(k_max <= snapshot.activeLoans_)
     {
         RejectedLoanInfo whyRegejecredLoan;
         whyRegejecredLoan.loan = loan;
