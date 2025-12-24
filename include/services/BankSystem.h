@@ -12,6 +12,7 @@
 #include "core/Loans.h"
 #include "core/RejectedLoanInfo.h"
 #include "services/CreditSnepshotServices.h"
+#include "ui/report/Report.h"
 class BankSystem
 {
 public:
@@ -24,6 +25,7 @@ public:
     void closeCustomer(int customerID);
     void closeLoan(std::shared_ptr<Loan> loan);
     void closeAccount(std::string iban);
+    std::shared_ptr<Report>GenerationReport(uint type);
     std::shared_ptr<Customer> login(std::string phoneNumber, std::string pass) const;
     private:
     std::unordered_map<int, std::shared_ptr<Customer>> activityCustomerList_;

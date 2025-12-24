@@ -1,6 +1,7 @@
 #include "ui/report/ReportTransaction.h"
 #include "ui/formatters/OperationTypeToString.h"
-ReportTransaction::ReportTransaction(const std::vector<std::shared_ptr<Transaction>>& transactionsList) : transactionsList_(transactionsList)
+#include <unordered_map>
+ReportTransaction::ReportTransaction(const std::unordered_map<int, std::shared_ptr<Transaction>>& transactionList) : transactionList_(transactionList)
 {}
 
 void ReportTransaction::build()
@@ -9,16 +10,16 @@ void ReportTransaction::build()
     doc_.header = {"ID", "Type", "Sum", "Account", "To account", "Time"};
 
     doc_.informations.clear();
-    doc_.informations.reserve(transactionsList_.size());
-    for(const auto& transact : transactionsList_)
+    doc_.informations.reserve(transactionList_.size());
+    for(const auto& transact : transactionList_)
     {
         std::string fromIban = "-";
-        if (auto from = transact->getAccount().lock()) fromIban = from->getIbam();
+        if (auto from = transact.second->getAccount().lock()) fromIban = from->getIbam();
 
         std::string toIban = "-";
-        if (transact->getType() == OperationType::transfer)
+        if (transact.second->getType() == OperationType::transfer)
         {
-            if (auto to = transact->getToAccount().lock())
+            if (auto to = transact.second->getToAccount().lock())
             {
                 toIban = to->getIbam();
             }
@@ -28,12 +29,12 @@ void ReportTransaction::build()
        (
         std::vector<std::string>
         {
-         std::to_string(transact->getId()),
-         operationTypeToString(transact->getType()),
-         std::to_string(transact->getSum()),
+         std::to_string(transact.second->getId()),
+         operationTypeToString(transact.second->getType()),
+         std::to_string(transact.second->getSum()),
          fromIban,
          toIban,
-         std::to_string(transact->getTime())
+         std::to_string(transact.second->getTime())
         }
        );
     }

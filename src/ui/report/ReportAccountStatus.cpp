@@ -1,7 +1,10 @@
 #include "ui/report/ReportAccountStatus.h"
 
 #include "ui/formatters/AccountTypeToString.h"
-ReportAccountStatus::ReportAccountStatus(const std::vector<std::shared_ptr<Account>>& accountList) : accountList_(accountList){};
+#include <memory>
+#include <unordered_map>
+
+ReportAccountStatus::ReportAccountStatus(const std::unordered_map<std::string, std::shared_ptr<Account>>& accountList) : accountList_(accountList){};
 void ReportAccountStatus::build()
 {
     doc_.title = "Account report";
@@ -14,9 +17,9 @@ void ReportAccountStatus::build()
     {
        doc_.informations.emplace_back(
         std::vector<std::string>{
-        acc->getIbam(),
-        std::to_string(acc->getBalance()),
-        accountTypeToString(acc->getType())
+        acc.second->getIbam(),
+        std::to_string( acc.second->getBalance()),
+        accountTypeToString( acc.second->getType())
     }
         );
     }

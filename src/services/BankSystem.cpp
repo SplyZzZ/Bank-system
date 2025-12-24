@@ -17,6 +17,10 @@
 #include "core/errors/LoanError.h"
 #include "core/RejectedLoanInfo.h"
 #include "services/CreditSnepshotServices.h"
+#include "ui/report/Report.h"
+#include "ui/report/ReportAccountStatus.h"
+#include "ui/report/ReportTransaction.h"
+#include "core/errors/ReportError.h"
 BankSystem::BankSystem()
         : creditServices_(archiveCustomer_)
     {
@@ -223,4 +227,23 @@ void BankSystem::closeAccount(std::string iban)
     customerIt->second->removeAccount(it->second->getIbam());
     closedAccountList_.try_emplace(it->second->getIbam(), it->second);
     activityAccountList_.erase(it);
+}
+std::shared_ptr<Report> BankSystem::GenerationReport(uint type)
+{
+  
+    switch (type)
+    {
+        case 1:
+        {
+           return std::make_shared<ReportAccountStatus>(accountList_); 
+        }
+        case 2:
+        {
+            return std::make_shared<ReportTransaction>(transactionList_);
+        }
+        default:
+        {
+            throw NoReportType{};
+        }
+    }
 }
