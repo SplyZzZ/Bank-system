@@ -35,3 +35,8 @@ class DeleteNotEmptyAccount : public BankError
 public:
  DeleteNotEmptyAccount() : BankError("Not empty account") {}
 };
+class AccountNotActivity : public BankError
+{
+    public:
+    AccountNotActivity() : BankError("Account not activity"){}
+};

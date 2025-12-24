@@ -7,6 +7,7 @@ public:
     StructReport genereteReport();
 
    virtual ~Report();
+   void print(const StructReport& doc);
 
 protected:
 

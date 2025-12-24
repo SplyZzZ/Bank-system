@@ -1,8 +1,11 @@
 #include "services/BankSystem.h"
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include "core/Account.h"
 #include "core/ContactInformation.h"
+#include "core/Customer.h"
+#include "core/LoanStatusType.h"
 #include "core/Loans.h"
 #include "core/Transaction.h"
 #include "core/errors/AccountError.h"
@@ -15,8 +18,12 @@
 #include "core/errors/LoanError.h"
 #include "core/RejectedLoanInfo.h"
 #include "services/CreditSnepshotServices.h"
+#include "ui/report/Report.h"
+#include "ui/report/ReportAccountStatus.h"
+#include "ui/report/ReportTransaction.h"
+#include "core/errors/ReportError.h"
 BankSystem::BankSystem()
-        : creditServices_(activityCustomerList_)
+        : creditServices_(archiveCustomer_)
     {
     }
 std::shared_ptr<Customer> BankSystem::addCustomer(std::string name, std::string pass, ContactInfrormation contact)
@@ -51,15 +58,16 @@ void BankSystem::createAccount(int customerID, AccountType type)
     auto customer =  activityCustomerList_.find(customerID);
     if(customer == activityCustomerList_.end()) {throw CustomerNotFound{}; }
 
-    std::string newIbam;
+    std::string newIbam = "4";
     do
     {
-      newIbam = IbamGeneretion();
+      newIbam = "324";
     }while(accountList_.find(newIbam) != accountList_.end());
 
-    auto newAccount = std::make_shared<Account>(newIbam, type);
+    auto newAccount = std::make_shared<Account>(newIbam, type, customerID);
     customer->second->addAccount(newIbam);
     accountList_.emplace(newIbam, newAccount);
+    activityAccountList_.emplace(newIbam, newAccount);
 
 }
 void BankSystem::createTransaction(OperationType type, int64_t sum, const std::string& fromAccount)
@@ -97,6 +105,7 @@ std::shared_ptr<Account> BankSystem::findAccountUsIban(const std::string& iban) 
 }
 void BankSystem::createLoan(int64_t sum, double rate, int term, int customerID)
 {
+    if(rate < 0.0 || term < 0) {throw std::invalid_argument("Не правильно введений термін або процент");}
     auto it = activityCustomerList_.find(customerID);
     if(it == activityCustomerList_.end()) throw CustomerNotFound {};
 
@@ -197,4 +206,48 @@ void BankSystem::closeCustomer(int customerID)
    if(user->second->getPass() != pass) { throw InvalidePassword{};}
    return user->second;
  }
+ 
+void BankSystem::closeLoan(std::shared_ptr<Loan> loan)
+{
+    auto it = activeLoans_.find(loan->getID());
+    if(it == activeLoans_.end()) { throw LoanIsNotActivity{}; }
+    if(it->second->getSum() != it->second->getGlobalSum()) {LoanHasNotBeenRepaid{};}
+    loan->changeStatus(LoanStatusType::extinguished);
+   
+    closedLoans_.try_emplace(it->second->getID(),it->second);
+    activeLoans_.erase(it);
+   creditServices_.addClosedLoans(loan->getCustomerID());
+}
+void BankSystem::closeAccount(std::string iban)
+{
+    auto it = activityAccountList_.find(iban);
+    if(it== activityAccountList_.end()) { throw AccountNotActivity{};}
+    if(it->second->getBalance() != 0) { throw DeleteNotEmptyAccount{}; }
+    auto customerIt = archiveCustomer_.find(it->second->getCustomerId());
+    if(customerIt == archiveCustomer_.end()) { throw CustomerNotFound {}; }   
+    it->second->changeType(AccountType::Closed);
+    customerIt->second->removeAccount(it->second->getIbam());
+    closedAccountList_.try_emplace(it->second->getIbam(), it->second);
+    activityAccountList_.erase(it);
+}
+
+std::shared_ptr<Report> BankSystem::GenerationReport(uint type)
+{
+  
+    switch (type)
+    {
+        case 1:
+        {
+           return std::make_shared<ReportAccountStatus>(accountList_); 
+        }
+        case 2:
+        {
+            return std::make_shared<ReportTransaction>(transactionList_);
+        }
+        default:
+        {
+            throw NoReportType{};
+        }
+    }
+}
 

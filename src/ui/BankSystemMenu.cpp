@@ -19,11 +19,9 @@ void UIBankSystem::printMenu()
     std::cout << "1. Add customer\n";
     std::cout << "2. Open account\n";
     std::cout << "3. Close account\n";
-    std::cout << "4. Deposit money\n";
-    std::cout << "5. Withdraw money\n";
-    std::cout << "6. Transfer money\n";
-    std::cout << "7. Issue loan\n";
-    std::cout << "8. Show reports\n";
+    std::cout << "4. new transaction\n";
+    std::cout << "5. Issue loan\n";
+    std::cout << "6. Show reports\n";
     std::cout << "0. Exit\n";
     std::cout << "Choose option: ";
 }
@@ -47,15 +45,59 @@ void UIBankSystem::run()
                 case 4: newTransaction(); break;
                 // case 5: withdraw(); break;
                 // case 6: transfer(); break;
-                // case 7: loan(); break;
-                // case 8: report(); break;
-                // case 0: std::cout << "Exit\n"; break;
+                case 5: loan(); break;
+                case 6: report(); break;
+                case 0: std::cout << "Exit\n"; break;
                 default: std::cout << "Invalid option\n";
             }
         }
         catch (const std::exception& e) {
             std::cout << "Error: " << e.what() << '\n';
         }
+    }
+}
+void UIBankSystem::loan()
+{
+    while(true)
+    {
+        try 
+        {
+            std::cout << "Введіть суму яку бажаєте взяти в кредит: ";
+            uint64_t sum = readNumber<uint64_t>();
+            std::cout << "Введіть проценти: ";
+            double rate = readNumber<double>();
+            std::cout << "Введіть термін в місяцях: ";
+            uint term = readNumber<uint>();
+            bank_.createLoan(sum,  rate,  term,  user_.user_->getID());
+            std::cout << "Кредит успішнно виданий!";
+            return;
+        }catch(const std::exception& e)
+        {
+            std::cout << "Error: " << e.what() << '\n';
+            std::cout << "Для відміни нажміть 1: ";
+            int tmp = readNumber<int>();
+            if(tmp == 1)
+            {
+                return;
+            }
+        }
+    
+    }
+}
+void UIBankSystem::report()
+{
+    try 
+    {
+        std::cout << "Виберіть тип звіту: ";
+        std::cout << "1 - Статус рахунків";
+        std::cout << "2 - Транзакції";
+        uint selection = readNumber<uint>();
+        auto report = bank_.GenerationReport(selection);
+        auto doc = report->genereteReport();
+        report->print(doc);
+    }catch(const std::exception& e)
+    {
+            std::cout << "Error: " << e.what() << '\n';
     }
 }
 void UIBankSystem::newTransaction()
@@ -106,15 +148,16 @@ void UIBankSystem::deposit()
         try 
         {
             bank_.createTransaction(OperationType::introduction, sum, iban);
+            return;
         } catch (const std::exception& e)
         {
-        std::cout << "Error: " << e.what() << '\n';
-        std::cout << "Для відміни нажміть 1: ";
-                    int tmp = readNumber<int>();
-                    if(tmp == 1)
-                    {
-                        return;
-                    }
+            std::cout << "Error: " << e.what() << '\n';
+            std::cout << "Для відміни нажміть 1: ";
+            int tmp = readNumber<int>();
+            if(tmp == 1)
+            {
+                return;
+            }
         }
    }
 }
@@ -133,15 +176,16 @@ void UIBankSystem::withdraw()
         try 
         {
             bank_.createTransaction(OperationType::removal, sum, iban);
+            return;
         } catch (const std::exception& e)
         {
-        std::cout << "Error: " << e.what() << '\n';
-        std::cout << "Для відміни нажміть 1: ";
-                    int tmp = readNumber<int>();
-                    if(tmp == 1)
-                    {
-                        return;
-                    }
+            std::cout << "Error: " << e.what() << '\n';
+            std::cout << "Для відміни нажміть 1: ";
+            int tmp = readNumber<int>();
+            if(tmp == 1)
+            {
+                return;
+            }
         }
    }
 
@@ -162,15 +206,16 @@ void UIBankSystem::transfer()
         try 
         {
             bank_.createTransaction(sum, fromIban, toIban);
+            return;
         } catch (const std::exception& e)
         {
-        std::cout << "Error: " << e.what() << '\n';
-        std::cout << "Для відміни нажміть 1: ";
-                    int tmp = readNumber<int>();
-                    if(tmp == 1)
-                    {
-                        return;
-                    }
+            std::cout << "Error: " << e.what() << '\n';
+            std::cout << "Для відміни нажміть 1: ";
+            int tmp = readNumber<int>();
+            if(tmp == 1)
+            {
+                return;
+            }
         }
    }
 
@@ -194,7 +239,7 @@ void UIBankSystem::addCustomer()
         {
             bank_.addCustomer(input.name, input.pass, input.contact);
             std::cout << "Користувача успішно додано!\n";
-            break;
+            return;
         }
         catch(std::exception& e)
         {
@@ -246,6 +291,20 @@ void UIBankSystem::openAccount()
         }
     }
         
+}
+void UIBankSystem::closeAccount()
+{
+    try 
+    {
+   
+    std::cout << "Виберіть який рахунок бажаєте закрити!\n";
+    printIbanList(user_.user_->getAccountsList());
+    std::string iban = readLine();
+    bank_.closeAccount(iban);
+    }catch(const std::exception& e)
+    {
+           std::cout << "Error: " << e.what() << "\n";
+    }
 }
 UIBankSystem::MenuResult UIBankSystem::loginMenu()
 {

@@ -38,7 +38,7 @@ private:
     void withdraw();
     void transfer();
     void printIbanList(const std::vector<std::string>& ibanList);
-    // void loan();
-    // void report();
+    void loan();
+    void report();
     
 };
